@@ -1,12 +1,12 @@
 # 🖥️ TechCompare — Comparador de Productos Tecnológicos
 
-> Plataforma web para buscar, filtrar y comparar productos tecnológicos de forma rápida, clara y segura.
+> Plataforma web para buscar, comparar y guardar productos tecnológicos de forma rápida, clara y segura.
 
 ---
 
 ## 📋 Descripción del Proyecto
 
-**TechCompare** es una aplicación web que centraliza información de productos tecnológicos en una sola plataforma, permitiendo a los usuarios comparar precios, características técnicas y disponibilidad sin necesidad de navegar entre múltiples sitios.
+TechCompare es una aplicación web que centraliza información de productos tecnológicos en una sola plataforma, permitiendo a los usuarios comparar precios, características técnicas y disponibilidad sin necesidad de navegar entre múltiples sitios.
 
 El sistema facilita la toma de decisiones de compra al ofrecer comparaciones lado a lado, filtros por categoría, marca y precio, y visualizaciones gráficas de especificaciones.
 
@@ -15,127 +15,73 @@ El sistema facilita la toma de decisiones de compra al ofrecer comparaciones lad
 ## 🎯 Objetivos
 
 ### General
-Desarrollar una aplicación que permita comparar productos tecnológicos mediante una base de datos estructurada, facilitando la búsqueda, filtrado y comparación para tomar decisiones de compra informadas.
+Desarrollar una aplicación web que permita comparar productos tecnológicos de diferentes tiendas, proporcionando información clara sobre precios, características y valoraciones, con el fin de ayudar a los usuarios a tomar decisiones de compra informadas, rápidas y eficientes.
 
 ### Específicos
-- Diseñar y desarrollar una aplicación web para la comparación de productos tecnológicos.
-- Implementar una base de datos con nombre, categoría, marca, precio, especificaciones y disponibilidad.
-- Conectar la base de datos con la aplicación mediante un sistema backend.
+- Desarrollar una aplicación web funcional para la comparación de productos tecnológicos lado a lado.
+- Integrar el aplicativo web con una base de datos que almacene la información de los productos.
 - Implementar búsqueda y filtrado por múltiples criterios.
 - Desarrollar interfaz de comparación de productos lado a lado.
-- Representar comparaciones mediante gráficas o estadísticas.
 - Desplegar la aplicación en una URL pública.
 
 ---
 
 ## 📦 Alcance
 
-**Incluido:**
+### Incluido
 - Base de datos de productos tecnológicos.
-- Backend para gestión de datos.
-- Frontend interactivo con búsqueda, filtrado y comparación.
-- Visualización de datos mediante gráficas.
+- Catálogo navegable de productos.
+- Barra de búsqueda de productos por nombre.
+- Filtros dinámicos por categoría, marca y rango de precio.
+- Módulo de comparación lado a lado para 2 o 3 productos.
+- Vista detallada de producto con especificaciones técnicas.
+- Módulo de reseñas y/o puntuaciones.
 - Despliegue en URL pública.
 
-**No incluido (fuera de alcance):**
-- Actualización automática en tiempo real de productos del mercado.
-- Integración con tiendas reales en esta fase.
-
----
-
-## ✅ Supuestos
-
-- El profesor proporcionará una base de datos simulada con productos tecnológicos.
-- Los usuarios contarán con acceso a internet.
-- El equipo tiene conocimientos básicos de programación.
-- Las tecnologías seleccionadas serán suficientes para el desarrollo.
-
----
-
-## ⚠️ Restricciones
-
-- Tiempo limitado por fechas de entrega del curso.
-- Cantidad de marcas y productos limitada a la base de datos provista.
-- Posibles limitaciones en experiencia con ciertas tecnologías.
-- Dependencia de la base de datos del profesor.
-- Restricciones en hosting o despliegue.
+### No incluido
+- Pasarelas de pago o transacciones reales.
+- Gestión de inventario en tiempo real.
+- Integración con tiendas físicas o geolocalización.
+- Actualización automática de productos del mercado en tiempo real.
 
 ---
 
 ## 🛠️ Stack Tecnológico
 
-| Área              | Tecnología         |
-|-------------------|--------------------|
-| Control de versiones | Git & GitHub    |
-| Lenguaje          | Por definir        |
-| Base de datos     | Por definir        |
-| Frontend          | Por definir        |
-| Backend           | Por definir        |
-| Despliegue        | URL pública        |
+| Área | Tecnología | Razón |
+|------|-----------|-------|
+| Control de versiones | Git & GitHub | Estándar para colaboración y gestión de repositorios |
+| Frontend | React (Vite) | Librería estándar de la industria, ideal para interfaces dinámicas |
+| Backend / API | Node.js + Express | Ligero y eficiente |
+| Despliegue | Vercel | URL pública con CI/CD integrado |
+| Base de datos | Por definir | — |
 
 ---
 
-## 📖 Historias de Usuario — Gestión PMP
+## 📖 Historias de Usuario
 
-Las siguientes historias corresponden a tareas de gestión del proyecto bajo el marco **PMP (Project Management Professional)**.
-
----
-
-### 🗂️ HU-PMP-01 — Crear Project Charter
-
-**Como** equipo de desarrollo,  
-**quiero** elaborar un Project Charter formal,  
-**para** definir el alcance, objetivos, entregables y partes interesadas del proyecto de manera oficial.
-
-**Criterios de aceptación:**
-- [ ] El Project Charter incluye nombre del proyecto, justificación, objetivos y alcance.
-- [ ] Se identifican los roles del equipo y responsabilidades.
-- [ ] El documento es aprobado y firmado (o validado) por el profesor/cliente.
-- [ ] El charter está disponible en el repositorio en la carpeta `/docs`.
+| ID | Historia | Prioridad |
+|----|----------|-----------|
+| HU-0001 | Catálogo de productos navegable | Alta |
+| HU-0002 | Búsqueda de productos | Alta |
+| HU-0003 | Filtrar productos | Media |
+| HU-0004 | Especificaciones de productos | Alta |
+| HU-0005 | Comparador de productos | Media |
+| HU-0006 | Marcado de productos favoritos | Media |
+| HU-0007 | Reseñas o puntuaciones | Baja |
+| HU-0008 | Aplicación desplegada en URL pública | Alta |
 
 ---
 
-### ✔️ HU-PMP-02 — Definir Definition of Done (DoD)
+## ✅ Definition of Done
 
-**Como** equipo de desarrollo,  
-**quiero** establecer una Definición de Done clara,  
-**para** que todos los miembros del equipo sepan cuándo una tarea o historia de usuario se considera completada.
+Una funcionalidad se considera **Done** cuando cumple con todos estos criterios:
 
-**Criterios de aceptación:**
-- [ ] El DoD está documentado y accesible para todo el equipo.
-- [ ] Incluye criterios de código (revisión, pruebas, sin errores).
-- [ ] Incluye criterios de documentación y despliegue cuando aplica.
-- [ ] El DoD está publicado en el repositorio o en el tablero del proyecto.
-
----
-
-### 👥 HU-PMP-03 — Definir Registro de Stakeholders
-
-**Como** equipo de desarrollo,  
-**quiero** identificar y documentar a todos los stakeholders del proyecto,  
-**para** gestionar sus expectativas y asegurar una comunicación efectiva durante el desarrollo.
-
-**Criterios de aceptación:**
-- [ ] Se identifican todos los interesados (profesor, equipo, usuarios objetivo, etc.).
-- [ ] El registro incluye nombre, rol, interés, nivel de influencia y expectativas.
-- [ ] El documento está disponible en la carpeta `/docs` del repositorio.
-- [ ] El registro es revisado y actualizado al menos una vez durante el proyecto.
-
----
-
-### 🐙 HU-PMP-04 — Configurar Repositorio GitHub
-
-**Como** equipo de desarrollo,  
-**quiero** configurar correctamente el repositorio en GitHub,  
-**para** tener un entorno de colaboración organizado y con control de versiones desde el inicio del proyecto.
-
-**Criterios de aceptación:**
-- [ ] El repositorio está creado y es accesible para todos los miembros del equipo.
-- [ ] El `README.md` inicial está redactado con descripción del proyecto.
-- [ ] Se define una estrategia de ramas (ej. `main`, `develop`, `feature/*`).
-- [ ] Se configura `.gitignore` adecuado al stack tecnológico.
-- [ ] Se crea la carpeta `/docs` para documentación del proyecto.
-- [ ] Se agrega al profesor/evaluador como colaborador o se comparte el enlace público.
+1. **Desarrollo** — La aplicación compila sin errores y el código cumple los requisitos de la HU.
+2. **Revisión de código** — Revisado por al menos otro desarrollador y correcciones aplicadas.
+3. **Validación** — Demostrada al Product Owner y cumple los criterios de aceptación.
+4. **Documentación** — Funcionalidad documentada y comentarios de código actualizados.
+5. **Integración** — Código integrado en la rama principal sin conflictos.
 
 ---
 
@@ -144,8 +90,8 @@ Las siguientes historias corresponden a tareas de gestión del proyecto bajo el 
 ```
 📦 techcompare/
 ├── 📂 docs/               # Project Charter, DoD, Registro de Stakeholders
-├── 📂 frontend/           # Código del cliente
-├── 📂 backend/            # Código del servidor
+├── 📂 frontend/           # Código del cliente (React)
+├── 📂 backend/            # Código del servidor (Node.js + Express)
 ├── 📂 database/           # Scripts y esquemas de base de datos
 ├── .gitignore
 └── README.md
@@ -157,9 +103,17 @@ Las siguientes historias corresponden a tareas de gestión del proyecto bajo el 
 
 | Nombre | Rol |
 |--------|-----|
-| _Samuel Gerena_ | _Development_ |
-| _Jorge Montes_ | _Development_ |
-| _Jorge Camargo_ | _Scrub master_ |
-| _Giovanni_ | _Product owner_ |
+| Samuel Gerena | Developer |
+| Jorge Eliecer | Developer |
+| Jorge Camargo | Scrum Master |
+| Jovany Gutierrez | Product Owner |
 
---
+---
+
+## ⚠️ Restricciones
+
+- Tiempo limitado por fechas de entrega del curso.
+- Cantidad de productos limitada a la base de datos provista por el profesor.
+- Dependencia de la base de datos del profesor.
+- Posibles limitaciones en hosting o despliegue.
+
