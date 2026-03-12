@@ -157,9 +157,9 @@ Las siguientes historias corresponden a tareas de gestión del proyecto bajo el 
 
 | Nombre | Rol |
 |--------|-----|
-| _(Samuel Gerena)_ | _(Development)_ |
-| _(Jorge Montes)_ | _(Development)_ |
-| _(Jorge Camargo)_ | _(Scrub master)_ |
-| _(Giovanni)_ | _(Product owner)_ |
+| _Samuel Gerena_ | _Development_ |
+| _Jorge Montes_ | _Development_ |
+| _Jorge Camargo_ | _Scrub master_ |
+| _Giovanni_ | _Product owner_ |
 
 --
