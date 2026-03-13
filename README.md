@@ -110,6 +110,15 @@ Una funcionalidad se considera **Done** cuando cumple con todos estos criterios:
 
 ---
 
+## 👨‍🏫 Profesor
+
+| Nombre | Asignatura |
+|--------|------------|
+| Jhonatan Rico | GESTIÓN DE PROYECTOS DE SOFTWARE |
+
+
+
+
 ## ⚠️ Restricciones
 
 - Tiempo limitado por fechas de entrega del curso.
