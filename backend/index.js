@@ -1,7 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const fs = require('fs');
-const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -9,20 +7,39 @@ const PORT = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json());
 
-// Load database from JSON
-const dataPath = path.join(__dirname, 'data.json');
+// Load database from JSON (compatible con Vercel serverless)
 let db = {};
 try {
-  const rawData = fs.readFileSync(dataPath, 'utf-8');
-  db = JSON.parse(rawData);
-  console.log('Base de datos cargada correctamente');
+  db = require('./data.json');
+  console.log('✅ Base de datos cargada correctamente');
+  console.log(`📊 Productos: ${db.products?.length || 0}`);
+  console.log(`🏷️ Marcas: ${db.brands?.length || 0}`);
+  console.log(`📁 Categorías: ${db.categories?.length || 0}`);
 } catch (error) {
-  console.error('Error al cargar la base de datos JSON:', error);
+  console.error('❌ Error al cargar data.json:', error.message);
+  db = { 
+    products: [], 
+    brands: [], 
+    categories: [], 
+    product_prices: [] 
+  };
 }
 
 // Routes
 app.get('/', (req, res) => {
-  res.send('API de TechCompare funcionando. Ve a /api/products para ver el catálogo.');
+  res.json({
+    message: 'API de TechCompare funcionando',
+    endpoints: {
+      products: '/api/products',
+      status: 'OK'
+    },
+    database_info: {
+      products: db.products?.length || 0,
+      brands: db.brands?.length || 0,
+      categories: db.categories?.length || 0,
+      prices: db.product_prices?.length || 0
+    }
+  });
 });
 
 // HU-0001: Catálogo de productos navegable
@@ -32,6 +49,13 @@ app.get('/api/products', (req, res) => {
     const brands = db.brands || [];
     const categories = db.categories || [];
     const prices = db.product_prices || [];
+    
+    if (products.length === 0) {
+      return res.status(404).json({ 
+        error: 'No hay productos en la base de datos',
+        hint: 'Verifica que data.json tenga productos'
+      });
+    }
     
     // Enrich products with brand, category and prices
     const enrichedProducts = products.map(product => {
@@ -57,7 +81,11 @@ app.get('/api/products', (req, res) => {
     
     res.json(enrichedProducts);
   } catch (error) {
-    res.status(500).json({ error: 'Error procesando los productos' });
+    console.error('Error procesando productos:', error);
+    res.status(500).json({ 
+      error: 'Error procesando los productos',
+      details: error.message 
+    });
   }
 });
 
@@ -66,6 +94,6 @@ module.exports = app;
 
 if (require.main === module) {
   app.listen(PORT, () => {
-    console.log(`Servidor corriendo en el puerto ${PORT}`);
+    console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
   });
 }
