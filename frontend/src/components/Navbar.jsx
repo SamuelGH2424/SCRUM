@@ -1,4 +1,3 @@
-// ── Componente: Barra de navegación con búsqueda ──
 export default function Navbar({ searchQuery, onSearchChange, onSearchSubmit, onKeyDown }) {
   return (
     <header className="glass" style={{
@@ -6,6 +5,8 @@ export default function Navbar({ searchQuery, onSearchChange, onSearchSubmit, on
       padding: '0 48px', height: '64px',
       display: 'flex', justifyContent: 'space-between', alignItems: 'center',
       gap: '1rem',
+      width: '100%',
+      boxSizing: 'border-box',
     }}>
 
       {/* Logo */}
@@ -44,6 +45,7 @@ export default function Navbar({ searchQuery, onSearchChange, onSearchSubmit, on
               fontSize: '0.95rem',
               outline: 'none',
               transition: 'border-color 0.2s',
+              boxSizing: 'border-box',
             }}
             onFocus={(e) => e.target.style.borderColor = 'var(--accent-color)'}
             onBlur={(e)  => e.target.style.borderColor = 'var(--border-color)'}

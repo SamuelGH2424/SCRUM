@@ -1,9 +1,14 @@
+import { useState } from 'react'
 import ProductCard from './ProductCard.jsx'
 
-// ── Componente: Sección catálogo de productos ──
-export default function Catalogo({ productos, cargando, error, slots, onToggleComparar, activeSearch, onClearSearch }) {
+const POR_PAGINA = 6
 
-  // Estado de carga
+export default function Catalogo({ productos, cargando, error, slots, onToggleComparar, activeSearch, onClearSearch }) {
+  const [pagina, setPagina] = useState(1)
+
+  const totalPaginas = Math.ceil(productos.length / POR_PAGINA)
+  const productosPagina = productos.slice((pagina - 1) * POR_PAGINA, pagina * POR_PAGINA)
+
   if (cargando) return (
     <section id="catalogo" style={{ padding: '72px 48px', maxWidth: '1280px', margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem' }}>
@@ -18,7 +23,6 @@ export default function Catalogo({ productos, cargando, error, slots, onToggleCo
     </section>
   )
 
-  // Estado de error
   if (error) return (
     <section id="catalogo" style={{ padding: '72px 48px', maxWidth: '1280px', margin: '0 auto' }}>
       <div className="glass" style={{ padding: '2rem', textAlign: 'center', borderRadius: '1rem', borderLeft: '4px solid var(--accent2)' }}>
@@ -30,7 +34,6 @@ export default function Catalogo({ productos, cargando, error, slots, onToggleCo
     </section>
   )
 
-  // Sin resultados de búsqueda
   if (productos.length === 0 && activeSearch) return (
     <section id="catalogo" style={{ padding: '72px 48px', maxWidth: '1280px', margin: '0 auto' }}>
       <div className="glass" style={{ padding: '3rem', textAlign: 'center', borderRadius: '1rem', borderLeft: '4px solid var(--accent-color)' }}>
@@ -56,7 +59,6 @@ export default function Catalogo({ productos, cargando, error, slots, onToggleCo
   return (
     <section id="catalogo" style={{ padding: '72px 48px', maxWidth: '1280px', margin: '0 auto' }}>
 
-      {/* Encabezado */}
       <div style={{ marginBottom: '40px' }}>
         <h2 style={{ fontSize: '1.85rem', fontWeight: '800', letterSpacing: '-0.02em', marginBottom: '8px' }}>
           Catálogo de <span style={{ color: 'var(--accent-color)' }}>Productos</span>
@@ -66,13 +68,12 @@ export default function Catalogo({ productos, cargando, error, slots, onToggleCo
         </p>
       </div>
 
-      {/* Grid de productos */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
         gap: '24px',
       }}>
-        {productos.map((producto, i) => (
+        {productosPagina.map((producto, i) => (
           <div key={producto.id} style={{ animationDelay: `${i * 0.05}s` }}>
             <ProductCard
               producto={producto}
@@ -82,6 +83,41 @@ export default function Catalogo({ productos, cargando, error, slots, onToggleCo
           </div>
         ))}
       </div>
+
+      {/* Paginación */}
+      {totalPaginas > 1 && (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px', marginTop: '48px' }}>
+          <button
+            onClick={() => setPagina(p => p - 1)}
+            disabled={pagina === 1}
+            style={{
+              background: pagina === 1 ? 'rgba(255,255,255,0.05)' : 'var(--accent-color)',
+              color: pagina === 1 ? 'var(--text-secondary)' : '#000',
+              border: 'none', borderRadius: '8px',
+              padding: '0.6rem 1.2rem', fontWeight: '700', cursor: pagina === 1 ? 'not-allowed' : 'pointer',
+            }}
+          >
+            ← Anterior
+          </button>
+
+          <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+            {pagina} / {totalPaginas}
+          </span>
+
+          <button
+            onClick={() => setPagina(p => p + 1)}
+            disabled={pagina === totalPaginas}
+            style={{
+              background: pagina === totalPaginas ? 'rgba(255,255,255,0.05)' : 'var(--accent-color)',
+              color: pagina === totalPaginas ? 'var(--text-secondary)' : '#000',
+              border: 'none', borderRadius: '8px',
+              padding: '0.6rem 1.2rem', fontWeight: '700', cursor: pagina === totalPaginas ? 'not-allowed' : 'pointer',
+            }}
+          >
+            Siguiente →
+          </button>
+        </div>
+      )}
     </section>
   )
 }

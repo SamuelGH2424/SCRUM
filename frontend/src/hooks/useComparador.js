@@ -1,24 +1,16 @@
 import { useState } from 'react'
 import { especificacionesOrden } from '../data/productos'
 
-// ── Hook para manejar el estado y lógica del comparador ──
 export function useComparador() {
-  const [slots, setSlots] = useState([null, null]) // [idProductoA, idProductoB]
+  const [slots, setSlots] = useState([null, null])
 
-  // Agregar o quitar un producto del comparador
   const toggleProducto = (id) => {
     setSlots(prev => {
       const [a, b] = prev
-
-      // Si ya está en algún slot, quitarlo
       if (a === id) return [null, b]
       if (b === id) return [a, null]
-
-      // Llenar el primer slot vacío
       if (a === null) return [id, b]
       if (b === null) return [a, id]
-
-      // Ambos llenos → reemplazar el slot A
       return [id, b]
     })
   }
@@ -33,11 +25,27 @@ export function useComparador() {
 
   const limpiarTodo = () => setSlots([null, null])
 
-  // ── Lógica de comparación spec por spec ──
+  // Normaliza specs sin importar si vienen del backend o de datos locales
+  const normalizar = (p) => {
+    if (p.specs) return p.specs
+    if (p.specifications) return {
+      Procesador:       p.specifications.processor,
+      RAM:              p.specifications.ram_gb ? `${p.specifications.ram_gb} GB` : null,
+      Almacenamiento:   p.specifications.storage,
+      'Tarjeta Gráfica': p.specifications.gpu,
+      Pantalla:         p.specifications.screen_size,
+      Año:              null,
+    }
+    return {}
+  }
+
   const compararEspecificaciones = (productoA, productoB) => {
+    const specsA = normalizar(productoA)
+    const specsB = normalizar(productoB)
+
     return especificacionesOrden.map(spec => {
-      const valA = productoA.specs?.[spec]
-      const valB = productoB.specs?.[spec]
+      const valA = specsA[spec]
+      const valB = specsB[spec]
 
       if (valA == null || valB == null) {
         return { spec, valA: valA ?? '—', valB: valB ?? '—', ganador: 'empate' }
@@ -53,12 +61,10 @@ export function useComparador() {
         ganador = numA > numB ? 'A' : numB > numA ? 'B' : 'empate'
 
       } else if (spec === 'Almacenamiento') {
-        // Convertir TB a GB para comparar
         const aGB = s => { const n = parseInt(s); return s.includes('TB') ? n * 1024 : n }
         ganador = aGB(valA) > aGB(valB) ? 'A' : aGB(valB) > aGB(valA) ? 'B' : 'empate'
 
       } else if (spec === 'Tarjeta Gráfica') {
-        // Puntaje por nivel de GPU
         const nivel = s => {
           if (s.includes('RTX 4090')) return 90
           if (s.includes('RTX 4080')) return 80
@@ -77,12 +83,10 @@ export function useComparador() {
         ganador = nivel(valA) > nivel(valB) ? 'A' : nivel(valB) > nivel(valA) ? 'B' : 'empate'
 
       } else if (spec === 'Pantalla') {
-        // Comparar por Hz de refresco
         const hz = s => parseInt(s.match(/(\d+)Hz/)?.[1] || 60)
         ganador = hz(valA) > hz(valB) ? 'A' : hz(valB) > hz(valA) ? 'B' : 'empate'
 
       } else if (spec === 'Procesador') {
-        // Comparar por generación del procesador (heurística)
         const generacion = s => {
           const m = s.match(/i[357]-(\d{2})\d{3}/) || s.match(/Ryzen \d (\d{4})/)
           if (!m) { if (s.includes('M2')) return 99; if (s.includes('M1')) return 95; return 0 }
