@@ -34,7 +34,6 @@ export function useComparador() {
       Almacenamiento:   p.specifications.storage,
       'Tarjeta Gráfica': p.specifications.gpu,
       Pantalla:         p.specifications.screen_size,
-      Año:              null,
     }
     return {}
   }
@@ -53,10 +52,7 @@ export function useComparador() {
 
       let ganador = 'empate'
 
-      if (spec === 'Año') {
-        ganador = valA > valB ? 'A' : valB > valA ? 'B' : 'empate'
-
-      } else if (spec === 'RAM') {
+      if (spec === 'RAM') {
         const numA = parseInt(valA), numB = parseInt(valB)
         ganador = numA > numB ? 'A' : numB > numA ? 'B' : 'empate'
 

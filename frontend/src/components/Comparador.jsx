@@ -16,22 +16,32 @@ export default function Comparador({ slots, productos, onLimpiarSlot, compararEs
         </p>
       </div>
 
-      {/* Slots seleccionados */}
+      {/* Slots: SlotA | VS | SlotB */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: '24px', alignItems: 'center', marginBottom: '40px' }}>
-        {['A', 'B'].map((letra, i) => (
-          <SlotSelector
-            key={letra}
-            letra={letra}
-            producto={i === 0 ? productoA : productoB}
-            onLimpiar={() => onLimpiarSlot(i)}
-          />
-        ))}
+
+        {/* Slot A */}
+        <SlotSelector
+          letra="A"
+          producto={productoA}
+          onLimpiar={() => onLimpiarSlot(0)}
+        />
+
+        {/* VS centrado */}
         <div style={{
           width: '48px', height: '48px', borderRadius: '50%',
           background: 'linear-gradient(135deg, var(--accent-color), var(--accent3))',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontWeight: '800', fontSize: '0.85rem', color: '#fff', flexShrink: 0, alignSelf: 'center',
+          fontWeight: '800', fontSize: '0.85rem', color: '#fff',
+          flexShrink: 0, alignSelf: 'center',
         }}>VS</div>
+
+        {/* Slot B */}
+        <SlotSelector
+          letra="B"
+          producto={productoB}
+          onLimpiar={() => onLimpiarSlot(1)}
+        />
+
       </div>
 
       {/* Tabla de comparación */}
@@ -103,18 +113,27 @@ function TablaComparacion({ productoA, productoB, filas }) {
         background: 'var(--surface-color)', borderBottom: '1px solid var(--border-color)',
         padding: '20px 24px', gap: '16px', alignItems: 'center',
       }}>
-        {[
-          <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '11px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Especificación</span>,
-          <div><div style={{ fontFamily: 'DM Mono, monospace', fontSize: '11px', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>{productoA.brand_name}</div><div style={{ fontWeight: '700' }}>{productoA.name}</div></div>,
-          <div style={{ textAlign: 'center', color: 'var(--text-secondary)', fontFamily: 'DM Mono, monospace', fontSize: '12px' }}>VS</div>,
-          <div><div style={{ fontFamily: 'DM Mono, monospace', fontSize: '11px', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>{productoB.brand_name}</div><div style={{ fontWeight: '700' }}>{productoB.name}</div></div>,
-        ].map((cell, i) => <div key={i}>{cell}</div>)}
+        <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '11px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+          Especificación
+        </span>
+        <div>
+          <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '11px', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>{productoA.brand_name}</div>
+          <div style={{ fontWeight: '700' }}>{productoA.name}</div>
+        </div>
+        <div style={{ textAlign: 'center', color: 'var(--text-secondary)', fontFamily: 'DM Mono, monospace', fontSize: '12px' }}>VS</div>
+        <div>
+          <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '11px', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>{productoB.brand_name}</div>
+          <div style={{ fontWeight: '700' }}>{productoB.name}</div>
+        </div>
       </div>
 
-      {/* Filas de specs */}
-      {filas.map(fila => (
-        <FilaComparacion key={fila.spec} fila={fila} />
-      ))}
+      {/* Filas de specs — filtra Año automáticamente */}
+      {filas
+        .filter(fila => fila.spec !== 'Año')
+        .map(fila => (
+          <FilaComparacion key={fila.spec} fila={fila} />
+        ))
+      }
 
       {/* Veredicto final */}
       <div style={{
@@ -145,8 +164,8 @@ function FilaComparacion({ fila }) {
   const estiloValor = (esGanador, esPerdedor) => ({
     fontWeight: '600', fontSize: '0.92rem',
     padding: '6px 12px', borderRadius: '8px',
-    ...(esGanador && { background: 'rgba(0,230,118,0.1)', color: 'var(--win-color)', border: '1px solid rgba(0,230,118,0.25)' }),
-    ...(esPerdedor && { background: 'rgba(255,77,109,0.07)', color: '#ff8099', border: '1px solid rgba(255,77,109,0.15)' }),
+    ...(esGanador  && { background: 'rgba(0,230,118,0.1)',  color: 'var(--win-color)', border: '1px solid rgba(0,230,118,0.25)' }),
+    ...(esPerdedor && { background: 'rgba(255,77,109,0.07)', color: '#ff8099',          border: '1px solid rgba(255,77,109,0.15)' }),
     ...(!esGanador && !esPerdedor && { background: 'rgba(255,255,255,0.05)', color: 'var(--text-primary)', border: '1px solid var(--border-color)' }),
   })
 

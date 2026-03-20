@@ -86,27 +86,7 @@ export default function ProductCard({ producto, enComparador, onToggleComparar }
           {producto.name}
         </h3>
 
-        {/* Specs resumidas */}
-        {producto.specs && (
-          <div style={{ marginBottom: '16px' }}>
-            {Object.entries(producto.specs)
-              .filter(([k]) => !['Año'].includes(k))
-              .slice(0, 3)
-              .map(([, v]) => (
-                <span key={v} style={{
-                  display: 'inline-block', fontFamily: 'DM Mono, monospace',
-                  fontSize: '10px', color: 'var(--text-secondary)',
-                  background: 'rgba(255,255,255,0.04)',
-                  border: '1px solid var(--border-color)',
-                  borderRadius: '5px', padding: '3px 8px', margin: '2px 2px 2px 0',
-                }}>
-                  {v}
-                </span>
-              ))
-            }
-          </div>
-        )}
-
+        
         {/* Precio y tiendas */}
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 'auto', paddingTop: '1rem' }}>
           <div>

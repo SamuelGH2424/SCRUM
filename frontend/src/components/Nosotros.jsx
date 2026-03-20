@@ -2,9 +2,9 @@
 
 // Información del equipo
 const equipoScrum = [
-  { iniciales: 'JC', nombre: 'Jorge Camargo',      rol: 'Scrum Master'  },
   { iniciales: 'GG', nombre: 'Giovanny Gutierrez', rol: 'Product Owner' },
-  { iniciales: 'JM', nombre: 'Jorge Moreno',       rol: 'Developer'     },
+  { iniciales: 'JC', nombre: 'Jorge Camargo',      rol: 'Scrum Master'  },
+  { iniciales: 'JM', nombre: 'Jorge Montes',       rol: 'Developer'     },
   { iniciales: 'SG', nombre: 'Samuel Gerena',      rol: 'Developer'     },
 ]
 
