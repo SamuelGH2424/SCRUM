@@ -30,7 +30,7 @@ export default function Nosotros() {
             <BotonExterno href="https://github.com/SamuelGH2424/SCRUM" icono={<IconoGitHub />}>
               Ver Repositorio
             </BotonExterno>
-            <BotonExterno href="https://scrum-ex19.vercel.app/" icono={<IconoVercel />}>
+            <BotonExterno href="https://scrum2424.vercel.app/" icono={<IconoVercel />}>
               Ver Catálogo de Productos en Vercel
             </BotonExterno>
           </div>
