@@ -1,191 +1,213 @@
-// ── Componente: Sección comparador de productos ──
+// ─────────────────────────────────────────────────────────────
+// 🔥 COMPONENTE PRINCIPAL: COMPARADOR
+// Se encarga de:
+// - Obtener los productos seleccionados
+// - Validar si son de la misma categoría
+// - Mostrar mensaje o tabla según el caso
+// ─────────────────────────────────────────────────────────────
 export default function Comparador({ slots, productos, onLimpiarSlot, compararEspecificaciones }) {
+
+  // 📌 Busca los productos seleccionados en los slots A y B
   const productoA = productos.find(p => p.id === slots[0])
   const productoB = productos.find(p => p.id === slots[1])
+
+  // 🧠 VALIDACIÓN CLAVE:
+  // Evita comparar cosas distintas (ej: celular vs computador)
+  const mismaCategoria =
+    productoA &&
+    productoB &&
+    productoA.category_id === productoB.category_id
 
   return (
     <section id="comparador" style={{ scrollMarginTop: '80px', padding: '72px 48px', maxWidth: '1280px', margin: '0 auto' }}>
 
-      {/* Encabezado */}
+      {/* 🧾 HEADER DEL COMPARADOR */}
       <div style={{ marginBottom: '40px' }}>
-        <h2 style={{ fontSize: '1.85rem', fontWeight: '800', letterSpacing: '-0.02em', marginBottom: '8px' }}>
+        <h2 style={{ fontSize: '1.85rem', fontWeight: '800' }}>
           Comparador <span style={{ color: 'var(--accent-color)' }}>Inteligente</span>
         </h2>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
-          Elige 2 productos del catálogo y descubre cuál es el ganador spec por spec
+          Elige 2 productos del catálogo y compara sus especificaciones
         </p>
       </div>
 
-      {/* Slots: SlotA | VS | SlotB */}
+      {/* ⚖️ SECCIÓN VISUAL: SLOT A vs SLOT B */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: '24px', alignItems: 'center', marginBottom: '40px' }}>
 
-        {/* Slot A */}
+        {/* 🅰️ Slot A */}
         <SlotSelector
           letra="A"
           producto={productoA}
           onLimpiar={() => onLimpiarSlot(0)}
         />
 
-        {/* VS centrado */}
+        {/* ⚔️ VS */}
         <div style={{
-          width: '48px', height: '48px', borderRadius: '50%',
+          width: '48px',
+          height: '48px',
+          borderRadius: '50%',
           background: 'linear-gradient(135deg, var(--accent-color), var(--accent3))',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontWeight: '800', fontSize: '0.85rem', color: '#fff',
-          flexShrink: 0, alignSelf: 'center',
-        }}>VS</div>
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontWeight: '800',
+          color: '#fff'
+        }}>
+          VS
+        </div>
 
-        {/* Slot B */}
+        {/* 🅱️ Slot B */}
         <SlotSelector
           letra="B"
           producto={productoB}
           onLimpiar={() => onLimpiarSlot(1)}
         />
-
       </div>
 
-      {/* Tabla de comparación */}
-      <div style={{ background: 'var(--surface-hover)', border: '1px solid var(--border-color)', borderRadius: '20px', overflow: 'hidden' }}>
-        {productoA && productoB ? (
+      {/* 📊 CONTENIDO PRINCIPAL */}
+      <div style={{ background: 'var(--surface-hover)', borderRadius: '20px', overflow: 'hidden' }}>
+
+        {/* ❌ Caso 1: No hay productos */}
+        {!productoA || !productoB ? (
+          <div style={{ textAlign: 'center', padding: '64px 24px' }}>
+            Selecciona <strong>2 productos</strong> para comparar
+          </div>
+
+        /* ❌ Caso 2: Diferente categoría */
+        ) : !mismaCategoria ? (
+          <div style={{ textAlign: 'center', padding: '64px 24px', color: '#ff8099' }}>
+            Solo puedes comparar productos de la misma categoría
+            <br />
+            (computador vs computador, celular vs celular, etc)
+          </div>
+
+        /* ✅ Caso 3: Comparación válida */
+        ) : (
           <TablaComparacion
             productoA={productoA}
             productoB={productoB}
+
+            // ⚙️ Aquí se generan las filas de comparación
             filas={compararEspecificaciones(productoA, productoB)}
           />
-        ) : (
-          <div style={{ textAlign: 'center', padding: '64px 24px', color: '#50505f', lineHeight: '1.6' }}>
-            Selecciona <strong style={{ color: 'var(--accent-color)' }}>2 productos</strong> del catálogo para ver la comparación detallada aquí.
-          </div>
         )}
       </div>
     </section>
   )
 }
 
-// ── Sub-componente: Slot de selección ──
+
+// ─────────────────────────────────────────────────────────────
+// 🧩 COMPONENTE: SLOT SELECTOR
+// Se encarga de:
+// - Mostrar producto seleccionado
+// - Mostrar botón de quitar
+// - Mostrar placeholder si está vacío
+// ─────────────────────────────────────────────────────────────
 function SlotSelector({ letra, producto, onLimpiar }) {
   return (
-    <div style={{
-      background: 'var(--surface-hover)',
-      border: `1px solid ${producto ? 'rgba(0,212,255,0.25)' : 'var(--border-color)'}`,
-      borderRadius: '16px', padding: '20px', minHeight: '100px',
-      display: 'flex', flexDirection: 'column', gap: '8px',
-      transition: 'border-color 0.2s',
-    }}>
-      <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--text-secondary)' }}>
+    <div
+      style={{
+        background: 'var(--surface-hover)',
+        borderRadius: '16px',
+        padding: '20px',
+        minHeight: '100px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '8px',
+      }}
+    >
+      {/* Etiqueta A o B */}
+      <div style={{ fontSize: '11px', color: 'gray' }}>
         Producto {letra}
       </div>
+
+      {/* ✅ Si hay producto */}
       {producto ? (
         <>
-          <div style={{ fontWeight: '700', fontSize: '1rem' }}>{producto.name}</div>
-          <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-            {producto.brand_name}
-          </div>
-          <button onClick={onLimpiar} style={{
-            background: 'none', border: 'none', color: 'var(--accent2)',
-            fontFamily: 'DM Mono, monospace', fontSize: '10px',
-            textTransform: 'uppercase', letterSpacing: '0.1em', cursor: 'pointer', padding: 0,
-          }}>✕ Quitar</button>
+          <div style={{ fontWeight: '700' }}>{producto.name}</div>
+          <div style={{ fontSize: '0.8rem' }}>{producto.brand_name}</div>
+
+          {/* Botón eliminar */}
+          <button onClick={onLimpiar}>
+            ✕ Quitar
+          </button>
         </>
       ) : (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#50505f', fontSize: '0.9rem' }}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>
-          </svg>
-          Selecciona desde el catálogo
-        </div>
+
+        /* ❌ Si no hay producto */
+        <div>Selecciona desde el catálogo</div>
       )}
     </div>
   )
 }
 
-// ── Sub-componente: Tabla de comparación ──
+
+// ─────────────────────────────────────────────────────────────
+// 📊 COMPONENTE: TABLA DE COMPARACIÓN
+// Se encarga de:
+// - Mostrar encabezado
+// - Mostrar cada spec
+// - Calcular ganador general
+// ─────────────────────────────────────────────────────────────
 function TablaComparacion({ productoA, productoB, filas }) {
+
+  // 🧠 Contar victorias
   const victoriasA = filas.filter(f => f.ganador === 'A').length
   const victoriasB = filas.filter(f => f.ganador === 'B').length
-  const ganadorGeneral = victoriasA > victoriasB ? productoA.name : victoriasB > victoriasA ? productoB.name : 'Empate'
+
+  // 🏆 Determinar ganador total
+  const ganadorGeneral =
+    victoriasA > victoriasB
+      ? productoA.name
+      : victoriasB > victoriasA
+      ? productoB.name
+      : 'Empate'
 
   return (
     <>
-      {/* Encabezado de tabla */}
-      <div style={{
-        display: 'grid', gridTemplateColumns: '200px 1fr 80px 1fr',
-        background: 'var(--surface-color)', borderBottom: '1px solid var(--border-color)',
-        padding: '20px 24px', gap: '16px', alignItems: 'center',
-      }}>
-        <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '11px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-          Especificación
-        </span>
-        <div>
-          <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '11px', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>{productoA.brand_name}</div>
-          <div style={{ fontWeight: '700' }}>{productoA.name}</div>
-        </div>
-        <div style={{ textAlign: 'center', color: 'var(--text-secondary)', fontFamily: 'DM Mono, monospace', fontSize: '12px' }}>VS</div>
-        <div>
-          <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '11px', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>{productoB.brand_name}</div>
-          <div style={{ fontWeight: '700' }}>{productoB.name}</div>
-        </div>
+      {/* HEADER */}
+      <div style={{ padding: '20px', borderBottom: '1px solid gray' }}>
+        <strong>{productoA.name}</strong> VS <strong>{productoB.name}</strong>
       </div>
 
-      {/* Filas de specs — filtra Año automáticamente */}
-      {filas
-        .filter(fila => fila.spec !== 'Año')
-        .map(fila => (
-          <FilaComparacion key={fila.spec} fila={fila} />
-        ))
-      }
+      {/* FILAS */}
+      {filas.map(fila => (
+        <FilaComparacion key={fila.spec} fila={fila} />
+      ))}
 
-      {/* Veredicto final */}
-      <div style={{
-        background: 'var(--surface-color)', borderTop: '1px solid var(--border-color)',
-        padding: '28px 32px', display: 'flex', alignItems: 'center',
-        justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px',
-      }}>
-        <div>
-          <div style={{ fontSize: '1rem', color: 'var(--text-secondary)', marginBottom: '6px' }}>Ganador general</div>
-          <div style={{ fontSize: '1.4rem', fontWeight: '800', color: 'var(--win-color)', display: 'flex', alignItems: 'center', gap: '10px' }}>
-            🏆 {ganadorGeneral}
-          </div>
-        </div>
-        <div style={{
-          fontFamily: 'DM Mono, monospace', fontSize: '0.85rem',
-          color: 'var(--text-secondary)', background: 'rgba(255,255,255,0.05)',
-          padding: '8px 16px', borderRadius: '8px', border: '1px solid var(--border-color)',
-        }}>
-          {productoA.name.split(' ').slice(-1)[0]}: {victoriasA} victorias &nbsp;|&nbsp; {productoB.name.split(' ').slice(-1)[0]}: {victoriasB} victorias
-        </div>
+      {/* RESULTADO FINAL */}
+      <div style={{ padding: '20px' }}>
+        🏆 Ganador: <strong>{ganadorGeneral}</strong>
       </div>
     </>
   )
 }
 
-// ── Sub-componente: Fila individual de comparación ──
+
+// ─────────────────────────────────────────────────────────────
+// 🧮 COMPONENTE: FILA DE COMPARACIÓN
+// Se encarga de:
+// - Mostrar spec
+// - Mostrar valores A y B
+// - Resaltar ganador
+// ─────────────────────────────────────────────────────────────
 function FilaComparacion({ fila }) {
-  const estiloValor = (esGanador, esPerdedor) => ({
-    fontWeight: '600', fontSize: '0.92rem',
-    padding: '6px 12px', borderRadius: '8px',
-    ...(esGanador  && { background: 'rgba(0,230,118,0.1)',  color: 'var(--win-color)', border: '1px solid rgba(0,230,118,0.25)' }),
-    ...(esPerdedor && { background: 'rgba(255,77,109,0.07)', color: '#ff8099',          border: '1px solid rgba(255,77,109,0.15)' }),
-    ...(!esGanador && !esPerdedor && { background: 'rgba(255,255,255,0.05)', color: 'var(--text-primary)', border: '1px solid var(--border-color)' }),
-  })
 
   return (
-    <div style={{
-      display: 'grid', gridTemplateColumns: '200px 1fr 80px 1fr',
-      padding: '14px 24px', gap: '16px', alignItems: 'center',
-      borderBottom: '1px solid rgba(255,255,255,0.04)',
-    }}>
-      <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '12px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-        {fila.spec}
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', padding: '10px' }}>
+
+      {/* Nombre de la spec */}
+      <div>{fila.spec}</div>
+
+      {/* Valor A */}
+      <div style={{ color: fila.ganador === 'A' ? 'green' : 'white' }}>
+        {fila.valA}
       </div>
-      <div style={estiloValor(fila.ganador === 'A', fila.ganador === 'B')}>
-        {fila.valA} {fila.ganador === 'A' ? '✓' : ''}
-      </div>
-      <div style={{ textAlign: 'center', fontFamily: 'DM Mono, monospace', fontSize: '11px', color: '#50505f' }}>
-        {fila.ganador === 'empate' ? '≡' : fila.ganador === 'A' ? '◀' : '▶'}
-      </div>
-      <div style={estiloValor(fila.ganador === 'B', fila.ganador === 'A')}>
-        {fila.valB} {fila.ganador === 'B' ? '✓' : ''}
+
+      {/* Valor B */}
+      <div style={{ color: fila.ganador === 'B' ? 'green' : 'white' }}>
+        {fila.valB}
       </div>
     </div>
   )
