@@ -2,17 +2,17 @@ import './index.css'
 import Navbar     from './components/Navbar.jsx'
 import Hero       from './components/Hero.jsx'
 import Catalogo   from './components/Catalogo.jsx'
-import Comparador from './components/Comparador.jsx'
+// import Comparador from './components/Comparador.jsx'
 import Nosotros   from './components/Nosotros.jsx'
 import Footer     from './components/Footer.jsx'
 import { useProductos }  from './hooks/useProductos.js'
-import { useComparador } from './hooks/useComparador.js'
+// import { useComparador } from './hooks/useComparador.js'
 import { useState } from 'react'
 
 function App() {
   // ── Datos y lógica de productos ──
   const { productos, cargando, error, fuenteDatos } = useProductos()
-  const { slots, toggleProducto, limpiarSlot, compararEspecificaciones } = useComparador()
+  // const { slots, toggleProducto, limpiarSlot, compararEspecificaciones } = useComparador()
 
   // ── Estado de búsqueda ──
   const [searchQuery, setSearchQuery]   = useState('')
@@ -28,7 +28,7 @@ function App() {
     : productos
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}> 
 
       {/* ── NAVBAR con barra de búsqueda integrada ── */}
       <Navbar
@@ -76,22 +76,22 @@ function App() {
         )}
 
         {/* ── Catálogo (maneja loading, error y sin resultados internamente) ── */}
-        <Catalogo
+        {<Catalogo
           productos={productosFiltrados}
           cargando={cargando}
           error={error}
-          slots={slots}
-          onToggleComparar={toggleProducto}
+          slots={[]}        //{ ← lista vacía   aca va (slots)}
+          onToggleComparar={() => {}} //aca va toggleProducto
           activeSearch={activeSearch}
           onClearSearch={clearSearch}
-        />
-
-        <Comparador
+        />}
+        
+        {/* <Comparador
           slots={slots}
           productos={productos}
           onLimpiarSlot={limpiarSlot}
           compararEspecificaciones={compararEspecificaciones}
-        />
+        /> */}
 
         <Nosotros />
       </main>
@@ -101,4 +101,4 @@ function App() {
   )
 }
 
-export default App
+export default App  
