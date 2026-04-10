@@ -1,34 +1,42 @@
 import './index.css'
 import Navbar     from './components/Navbar.jsx'
 import Hero       from './components/Hero.jsx'
+import Filtros    from './components/Filtros.jsx'
 import Catalogo   from './components/Catalogo.jsx'
-// import Comparador from './components/Comparador.jsx'
+import Comparador from './components/Comparador.jsx'
 import Nosotros   from './components/Nosotros.jsx'
 import Footer     from './components/Footer.jsx'
 import { useProductos }  from './hooks/useProductos.js'
-// import { useComparador } from './hooks/useComparador.js'
+import { useComparador } from './hooks/useComparador.js'
 import { useState } from 'react'
 
 function App() {
   // ── Datos y lógica de productos ──
-  const { productos, cargando, error, fuenteDatos } = useProductos()
-  // const { slots, toggleProducto, limpiarSlot, compararEspecificaciones } = useComparador()
+  const { productos, cargando, error, fuenteDatos, recargar } = useProductos()
+  const { slots, toggleProducto, limpiarSlot, compararEspecificaciones } = useComparador()
 
   // ── Estado de búsqueda ──
   const [searchQuery, setSearchQuery]   = useState('')
   const [activeSearch, setActiveSearch] = useState('')
 
+  // ── Filtros ──
+  const aplicarFiltros = (filtros) => {
+  console.log("APLICANDO FILTROS EN APP:", filtros)
+  recargar(filtros)
+}
+
+  // ── Funciones de búsqueda ──
   const handleSearch = () => setActiveSearch(searchQuery.trim())
   const handleKeyDown = (e) => { if (e.key === 'Enter') handleSearch() }
   const clearSearch   = () => { setSearchQuery(''); setActiveSearch('') }
 
-  // Filtra productos según búsqueda activa
+  // ── Filtrar por búsqueda (encima de filtros backend) ──
   const productosFiltrados = activeSearch
     ? productos.filter(p => p.name.toLowerCase().includes(activeSearch.toLowerCase()))
     : productos
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}> 
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
 
       {/* ── NAVBAR con barra de búsqueda integrada ── */}
       <Navbar
@@ -40,6 +48,9 @@ function App() {
 
       <main style={{ flex: 1 }}>
         <Hero />
+
+        {/* 🔥 FILTROS (nuevo) */}
+        <Filtros onFiltrar={aplicarFiltros} />
 
         {/* Banner: modo offline */}
         {fuenteDatos === 'local' && (
@@ -75,23 +86,24 @@ function App() {
           </div>
         )}
 
-        {/* ── Catálogo (maneja loading, error y sin resultados internamente) ── */}
-        {<Catalogo
+        {/* ── Catálogo ── */}
+        <Catalogo
           productos={productosFiltrados}
           cargando={cargando}
           error={error}
-          slots={[]}        //{ ← lista vacía   aca va (slots)}
-          onToggleComparar={() => {}} //aca va toggleProducto
+          slots={slots}
+          onToggleComparar={toggleProducto}
           activeSearch={activeSearch}
           onClearSearch={clearSearch}
-        />}
-        
-        {/* <Comparador
+        />
+
+        {/* ── Comparador ── */}
+        <Comparador
           slots={slots}
           productos={productos}
           onLimpiarSlot={limpiarSlot}
           compararEspecificaciones={compararEspecificaciones}
-        /> */}
+        />
 
         <Nosotros />
       </main>
@@ -101,4 +113,5 @@ function App() {
   )
 }
 
-export default App  
+export default App
+
