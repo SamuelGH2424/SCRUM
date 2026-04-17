@@ -3,17 +3,17 @@ import Navbar     from './components/Navbar.jsx'
 import Hero       from './components/Hero.jsx'
 import Filtros    from './components/Filtros.jsx'
 import Catalogo   from './components/Catalogo.jsx'
-// import Comparador from './components/Comparador.jsx'
+import Comparador from './components/Comparador.jsx'
 import Nosotros   from './components/Nosotros.jsx'
 import Footer     from './components/Footer.jsx'
 import { useProductos }  from './hooks/useProductos.js'
-// import { useComparador } from './hooks/useComparador.js'
+import { useComparador } from './hooks/useComparador.js'
 import { useState } from 'react'
 
 function App() {
   // ── Datos y lógica de productos ──
   const { productos, cargando, error, fuenteDatos, recargar } = useProductos()
-  //const { slots, toggleProducto, limpiarSlot, compararEspecificaciones } = useComparador()
+  const { slots, toggleProducto, limpiarSlot, compararEspecificaciones } = useComparador()
 
   // ── Estado de búsqueda ──
   const [searchQuery, setSearchQuery]   = useState('')
@@ -91,19 +91,19 @@ function App() {
           productos={productosFiltrados}
           cargando={cargando}
           error={error}
-          slots={[]}        //{ ← lista vacía   aca va (slots)}
-          onToggleComparar={() => {}} //aca va toggleProducto
+          slots={slots}        
+          onToggleComparar={toggleProducto} 
           activeSearch={activeSearch}
           onClearSearch={clearSearch}
         />
 
-         {/*── Comparador ── }
+         { /*── Comparador ── */}
         <Comparador
           slots={slots}
           productos={productos}
           onLimpiarSlot={limpiarSlot}
           compararEspecificaciones={compararEspecificaciones}
-        /> */}
+        /> 
         
 
         <Nosotros />
