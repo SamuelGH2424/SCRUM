@@ -1,17 +1,24 @@
+// useComparador.js
 import { useState } from 'react'
 import { especificacionesOrden } from '../data/productos'
 
 export function useComparador() {
-  const [slots, setSlots] = useState([null, null])
+  const [slots, setSlots] = useState([null, null, null])
 
   const toggleProducto = (id) => {
     setSlots(prev => {
-      const [a, b] = prev
-      if (a === id) return [null, b]
-      if (b === id) return [a, null]
-      if (a === null) return [id, b]
-      if (b === null) return [a, id]
-      return [id, b]
+      if (prev.includes(id)) {
+        return prev.map(slot => (slot === id ? null : slot))
+      }
+
+      const indiceLibre = prev.findIndex(slot => slot === null)
+      if (indiceLibre !== -1) {
+        const nuevo = [...prev]
+        nuevo[indiceLibre] = id
+        return nuevo
+      }
+
+      return [id, prev[1], prev[2]]
     })
   }
 
@@ -23,75 +30,142 @@ export function useComparador() {
     })
   }
 
-  const limpiarTodo = () => setSlots([null, null])
+  const limpiarTodo = () => setSlots([null, null, null])
 
-  // Normaliza specs sin importar si vienen del backend o de datos locales
   const normalizar = (p) => {
     if (p.specs) return p.specs
     if (p.specifications) return {
-      Procesador:       p.specifications.processor,
-      RAM:              p.specifications.ram_gb ? `${p.specifications.ram_gb} GB` : null,
-      Almacenamiento:   p.specifications.storage,
+      Procesador: p.specifications.processor,
+      RAM: p.specifications.ram_gb ? `${p.specifications.ram_gb} GB` : null,
+      Almacenamiento: p.specifications.storage,
       'Tarjeta Gráfica': p.specifications.gpu,
-      Pantalla:         p.specifications.screen_size,
+      Pantalla: p.specifications.screen_size,
+      Año: p.specifications.year,
     }
     return {}
   }
 
-  const compararEspecificaciones = (productoA, productoB) => {
-    const specsA = normalizar(productoA)
-    const specsB = normalizar(productoB)
+  const extraerNumero = (texto = '') => {
+    const match = String(texto).replace(',', '.').match(/(\d+(\.\d+)?)/)
+    return match ? parseFloat(match[1]) : 0
+  }
+
+  const normalizarTexto = (texto = '') => String(texto).trim().toLowerCase()
+
+  const puntuarProcesador = (texto = '') => {
+    const s = String(texto)
+    if (/ultra\s*9/i.test(s)) return 980
+    if (/ultra\s*7/i.test(s)) return 940
+    if (/ultra\s*5/i.test(s)) return 900
+    if (/i9-/i.test(s)) return 860 + extraerNumero(s)
+    if (/i7-/i.test(s)) return 760 + extraerNumero(s)
+    if (/i5-/i.test(s)) return 660 + extraerNumero(s)
+    if (/i3-/i.test(s)) return 560 + extraerNumero(s)
+    if (/ryzen 9/i.test(s)) return 850 + extraerNumero(s)
+    if (/ryzen 7/i.test(s)) return 750 + extraerNumero(s)
+    if (/ryzen 5/i.test(s)) return 650 + extraerNumero(s)
+    if (/m3/i.test(s)) return 930
+    if (/m2/i.test(s)) return 880
+    if (/m1/i.test(s)) return 820
+    return extraerNumero(s)
+  }
+
+  const puntuarRam = (texto = '') => extraerNumero(texto)
+
+  const puntuarAlmacenamiento = (texto = '') => {
+    const s = normalizarTexto(texto)
+    const cantidad = extraerNumero(s)
+    if (s.includes('tb')) return cantidad * 1024
+    return cantidad
+  }
+
+  const puntuarPantalla = (texto = '') => {
+    const s = String(texto)
+    const pulgadas = extraerNumero(s)
+    const hzMatch = s.match(/(\d+)\s*hz/i)
+    const hz = hzMatch ? parseInt(hzMatch[1]) : 60
+    return hz * 10 + pulgadas
+  }
+
+  const puntuarGrafica = (texto = '') => {
+    const s = String(texto)
+    if (/rtx\s*4090/i.test(s)) return 990
+    if (/rtx\s*4080/i.test(s)) return 940
+    if (/rtx\s*4070/i.test(s)) return 900
+    if (/rtx\s*4060/i.test(s)) return 850
+    if (/rtx\s*4050/i.test(s)) return 810
+    if (/rtx\s*3080/i.test(s)) return 790
+    if (/rtx\s*3070/i.test(s)) return 760
+    if (/rtx\s*3060/i.test(s)) return 720
+    if (/rtx\s*3050 ti/i.test(s)) return 680
+    if (/rtx\s*3050/i.test(s)) return 650
+    if (/radeon\s*rx\s*7900/i.test(s)) return 930
+    if (/radeon\s*rx\s*7800/i.test(s)) return 890
+    if (/radeon\s*graphics/i.test(s)) return 420
+    if (/iris\s*xe/i.test(s)) return 390
+    if (/intel\s*uhd/i.test(s)) return 260
+    if (/m3/i.test(s)) return 640
+    if (/m2/i.test(s)) return 560
+    if (/m1/i.test(s)) return 500
+
+    const vram = s.match(/(\d+)\s*gb/i)
+    if (vram) return 500 + parseInt(vram[1]) * 20
+    return 0
+  }
+
+  const obtenerPuntaje = (spec, valor) => {
+    switch (spec) {
+      case 'Procesador': return puntuarProcesador(valor)
+      case 'RAM': return puntuarRam(valor)
+      case 'Almacenamiento': return puntuarAlmacenamiento(valor)
+      case 'Tarjeta Gráfica': return puntuarGrafica(valor)
+      case 'Pantalla': return puntuarPantalla(valor)
+      case 'Año': return extraerNumero(valor)
+      default: return extraerNumero(valor)
+    }
+  }
+
+  const compararEspecificaciones = (...productos) => {
+    const productosValidos = productos.filter(Boolean)
 
     return especificacionesOrden.map(spec => {
-      const valA = specsA[spec]
-      const valB = specsB[spec]
+      const valores = productosValidos.map(producto => {
+        const specs = normalizar(producto)
+        const valor = specs[spec]
 
-      if (valA == null || valB == null) {
-        return { spec, valA: valA ?? '—', valB: valB ?? '—', ganador: 'empate' }
-      }
-
-      let ganador = 'empate'
-
-      if (spec === 'RAM') {
-        const numA = parseInt(valA), numB = parseInt(valB)
-        ganador = numA > numB ? 'A' : numB > numA ? 'B' : 'empate'
-
-      } else if (spec === 'Almacenamiento') {
-        const aGB = s => { const n = parseInt(s); return s.includes('TB') ? n * 1024 : n }
-        ganador = aGB(valA) > aGB(valB) ? 'A' : aGB(valB) > aGB(valA) ? 'B' : 'empate'
-
-      } else if (spec === 'Tarjeta Gráfica') {
-        const nivel = s => {
-          if (s.includes('RTX 4090')) return 90
-          if (s.includes('RTX 4080')) return 80
-          if (s.includes('RTX 4070')) return 70
-          if (s.includes('RTX 4060')) return 60
-          if (s.includes('RTX 3080')) return 58
-          if (s.includes('RTX 3070')) return 55
-          if (s.includes('RTX 3060')) return 50
-          if (s.includes('RTX 3050 Ti')) return 42
-          if (s.includes('RTX 3050')) return 40
-          if (s.includes('M2')) return 38
-          if (s.includes('M1')) return 32
-          const gb = parseInt(s.match(/(\d+)\s*GB/)?.[1] || 0)
-          return gb * 5
+        if (valor == null || valor === '') {
+          return { productoId: producto.id, valor: '—', puntaje: 0, estado: 'empate' }
         }
-        ganador = nivel(valA) > nivel(valB) ? 'A' : nivel(valB) > nivel(valA) ? 'B' : 'empate'
 
-      } else if (spec === 'Pantalla') {
-        const hz = s => parseInt(s.match(/(\d+)Hz/)?.[1] || 60)
-        ganador = hz(valA) > hz(valB) ? 'A' : hz(valB) > hz(valA) ? 'B' : 'empate'
-
-      } else if (spec === 'Procesador') {
-        const generacion = s => {
-          const m = s.match(/i[357]-(\d{2})\d{3}/) || s.match(/Ryzen \d (\d{4})/)
-          if (!m) { if (s.includes('M2')) return 99; if (s.includes('M1')) return 95; return 0 }
-          return parseInt(m[1])
+        return {
+          productoId: producto.id,
+          valor: String(valor),
+          puntaje: obtenerPuntaje(spec, valor),
+          estado: 'empate',
         }
-        ganador = generacion(valA) > generacion(valB) ? 'A' : generacion(valB) > generacion(valA) ? 'B' : 'empate'
-      }
+      })
 
-      return { spec, valA: String(valA), valB: String(valB), ganador }
+      const puntajes = valores.map(v => v.puntaje)
+      const max = Math.max(...puntajes)
+      const min = Math.min(...puntajes)
+      const hayDiferencia = max !== min
+
+      const valoresConEstado = valores.map(v => ({
+        ...v,
+        estado: !hayDiferencia
+          ? 'empate'
+          : v.puntaje === max
+          ? 'ganador'
+          : v.puntaje === min
+          ? 'perdedor'
+          : 'intermedio',
+      }))
+
+      const ganadores = valoresConEstado
+        .filter(v => hayDiferencia && v.puntaje === max)
+        .map(v => v.productoId)
+
+      return { spec, valores: valoresConEstado, ganadores }
     })
   }
 

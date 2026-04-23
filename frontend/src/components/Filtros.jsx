@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useFiltros } from '../hooks/useFiltros' 
+import { useFiltros } from '../hooks/useFiltros'
 
 export default function Filtros({ onFiltrar }) {
   const [category, setCategory] = useState('')
@@ -7,19 +7,15 @@ export default function Filtros({ onFiltrar }) {
   const [minPrice, setMinPrice] = useState('')
   const [maxPrice, setMaxPrice] = useState('')
 
-  // 🔥 Hook dinámico
   const { categorias, marcas } = useFiltros()
 
   const aplicarFiltros = () => {
-    const filtros = {
+    onFiltrar({
       ...(category && { category }),
       ...(brand && { brand }),
       ...(minPrice && { minPrice }),
       ...(maxPrice && { maxPrice }),
-    }
-
-    console.log("FILTROS ENVIADOS:", filtros)
-    onFiltrar(filtros)
+    })
   }
 
   const limpiarFiltros = () => {
@@ -31,108 +27,213 @@ export default function Filtros({ onFiltrar }) {
   }
 
   return (
-    <section style={{
-      background: '#000',
-      padding: '32px',
-      display: 'flex',
-      justifyContent: 'center'
-    }}>
-      
-      <div style={{
-        width: '100%',
-        maxWidth: '1000px',
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: '16px',
-        justifyContent: 'center',
-        alignItems: 'center'
-      }}>
+    <section style={{ padding: '28px 24px' }}>
+      <div style={panel}>
 
-        {/* 🔽 CATEGORY DINÁMICO */}
-        <select 
-          value={category} 
-          onChange={e => setCategory(e.target.value)} 
-          style={inputStyle}
-        >
-          <option value="">Categoría</option>
+        <h3 style={title}>Filtra tu catálogo</h3>
 
-          {categorias
-            .sort((a, b) => a.name.localeCompare(b.name))
-            .map(cat => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
-              </option>
-          ))}
-        </select>
+        <div style={grid}>
 
-        {/* 🔽 BRAND DINÁMICO */}
-        <select 
-          value={brand} 
-          onChange={e => setBrand(e.target.value)} 
-          style={inputStyle}
-        >
-          <option value="">Marca</option>
+          <CustomSelect
+            label="Categoría"
+            value={category}
+            placeholder="Todas las categorías"
+            options={categorias.map(c => ({ value: c.id, label: c.name }))}
+            onChange={setCategory}
+          />
 
-          {marcas
-            .sort((a, b) => a.name.localeCompare(b.name))
-            .map(marca => (
-              <option key={marca.id} value={marca.id}>
-                {marca.name}
-              </option>
-          ))}
-        </select>
+          <CustomSelect
+            label="Marca"
+            value={brand}
+            placeholder="Todas las marcas"
+            options={marcas.map(m => ({ value: m.id, label: m.name }))}
+            onChange={setBrand}
+          />
 
-        {/* PRECIO */}
-        <input
-          type="number"
-          placeholder="Precio min"
-          value={minPrice}
-          onChange={e => setMinPrice(e.target.value)}
-          style={inputStyle}
-        />
+          <Input
+            label="Precio mínimo"
+            value={minPrice}
+            onChange={setMinPrice}
+            placeholder="$ 0"
+          />
 
-        <input
-          type="number"
-          placeholder="Precio max"
-          value={maxPrice}
-          onChange={e => setMaxPrice(e.target.value)}
-          style={inputStyle}
-        />
+          <Input
+            label="Precio máximo"
+            value={maxPrice}
+            onChange={setMaxPrice}
+            placeholder="$ 9999999"
+          />
 
-        {/* BOTONES */}
-        <button onClick={aplicarFiltros} style={botonPrincipal}>
-          Filtrar
-        </button>
+        </div>
 
-        <button onClick={limpiarFiltros} style={botonPrincipal}>
-          Limpiar
-        </button>
+        <div style={{ marginTop: 20, display: 'flex', gap: 10 }}>
+          <button onClick={aplicarFiltros} style={btnPrimary}>
+            Aplicar filtros
+          </button>
+
+          <button onClick={limpiarFiltros} style={btnSecondary}>
+            Limpiar
+          </button>
+        </div>
 
       </div>
     </section>
   )
 }
 
-// 🎨 ESTILOS
+function CustomSelect({ label, value, placeholder, options, onChange }) {
+  const [open, setOpen] = useState(false)
 
-const inputStyle = {
-  background: '#fff',
-  color: '#000',
-  border: 'none',
-  borderRadius: '8px',
-  padding: '10px 14px',
-  fontSize: '0.9rem',
-  minWidth: '140px',
-  outline: 'none'
+  const selected = options.find(o => String(o.value) === String(value))
+
+  return (
+    <div style={{ position: 'relative' }}>
+      <label style={labelStyle}>{label}</label>
+
+      <div
+        onClick={() => setOpen(!open)}
+        style={selectBox}
+      >
+        {selected ? selected.label : placeholder}
+        <span>{open ? '▲' : '▼'}</span>
+      </div>
+
+      {open && (
+        <div style={dropdown}>
+          <div
+            onClick={() => {
+              onChange('')
+              setOpen(false)
+            }}
+            style={option}
+          >
+            {placeholder}
+          </div>
+
+          {options.map(opt => (
+            <div
+              key={opt.value}
+              onClick={() => {
+                onChange(opt.value)
+                setOpen(false)
+              }}
+              style={{
+                ...option,
+                ...(String(value) === String(opt.value) ? selectedOption : {})
+              }}
+            >
+              {opt.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
 }
 
-const botonPrincipal = {
-  background: '#00d4ff',
-  color: '#000',
-  border: 'none',
-  borderRadius: '8px',
-  padding: '10px 14px',
-  fontWeight: '700',
+function Input({ label, value, onChange, placeholder }) {
+  return (
+    <div>
+      <label style={labelStyle}>{label}</label>
+      <input
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        placeholder={placeholder}
+        style={input}
+        type="number"
+      />
+    </div>
+  )
+}
+
+/* 🎨 ESTILOS */
+
+const panel = {
+  maxWidth: '1200px',
+  margin: '0 auto',
+  padding: 24,
+  borderRadius: 20,
+  background: 'linear-gradient(180deg,#020617,#0f172a)',
+  border: '1px solid rgba(255,255,255,0.08)'
+}
+
+const title = {
+  color: '#fff',
+  marginBottom: 20
+}
+
+const grid = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))',
+  gap: 16
+}
+
+const labelStyle = {
+  display: 'block',
+  marginBottom: 6,
+  color: '#94a3b8',
+  fontWeight: 700,
+  fontSize: 12
+}
+
+const selectBox = {
+  background: '#0f172a',
+  padding: 12,
+  borderRadius: 10,
+  border: '1px solid rgba(255,255,255,0.1)',
+  color: '#fff',
+  display: 'flex',
+  justifyContent: 'space-between',
+  cursor: 'pointer'
+}
+
+const dropdown = {
+  position: 'absolute',
+  width: '100%',
+  background: '#020617',
+  border: '1px solid rgba(255,255,255,0.1)',
+  borderRadius: 10,
+  marginTop: 6,
+  zIndex: 1000,
+  maxHeight: 200,
+  overflowY: 'auto'
+}
+
+const option = {
+  padding: 10,
   cursor: 'pointer',
-  transition: '0.2s'
+  color: '#e2e8f0'
+}
+
+const selectedOption = {
+  background: '#0ea5e9',
+  color: '#fff'
+}
+
+const input = {
+  width: '100%',
+  padding: 12,
+  borderRadius: 10,
+  border: '1px solid rgba(255,255,255,0.1)',
+  background: '#0f172a',
+  color: '#fff'
+}
+
+const btnPrimary = {
+  padding: '10px 16px',
+  borderRadius: 10,
+  border: 'none',
+  background: '#06b6d4',
+  color: '#000',
+  fontWeight: 700,
+  cursor: 'pointer'
+}
+
+const btnSecondary = {
+  padding: '10px 16px',
+  borderRadius: 10,
+  border: '1px solid rgba(255,255,255,0.1)',
+  background: 'transparent',
+  color: '#fff',
+  cursor: 'pointer'
 }
