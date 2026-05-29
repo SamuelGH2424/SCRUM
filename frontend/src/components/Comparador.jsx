@@ -1,30 +1,56 @@
-// Comparador.jsx
-const COLOR_WIN_BG = 'rgba(34, 197, 94, 0.14)'
+// ============================================================
+// Comparador.jsx — La vista del comparador inteligente
+// ============================================================
+// Este componente muestra VISUALMENTE el comparador.
+// No tiene lógica propia de cálculo — eso lo hace useComparador.
+// Su trabajo es tomar los resultados y pintarlos en pantalla.
+//
+// Estructura visual:
+//   - 3 tarjetas de slots (A, B, C) en la parte superior
+//   - Tabla de comparación con colores por resultado
+//   - Barra final que declara el ganador o empate
+// ============================================================
+
+// Colores del sistema de comparación:
+//   Verde  → ganador (el mejor en esa especificación)
+//   Rojo   → perdedor (el peor en esa especificación)
+//   Azul   → intermedio (el del medio cuando hay 3 productos)
+//   Blanco → empate (todos tienen el mismo valor)
+const COLOR_WIN_BG     = 'rgba(34, 197, 94, 0.14)'
 const COLOR_WIN_BORDER = 'rgba(34, 197, 94, 0.45)'
-const COLOR_LOSE_BG = 'rgba(239, 68, 68, 0.12)'
-const COLOR_LOSE_BORDER = 'rgba(239, 68, 68, 0.35)'
-const COLOR_MID_BG = 'rgba(59, 130, 246, 0.13)'
+const COLOR_LOSE_BG    = 'rgba(239, 68, 68, 0.12)'
+const COLOR_LOSE_BORDER= 'rgba(239, 68, 68, 0.35)'
+const COLOR_MID_BG     = 'rgba(59, 130, 246, 0.13)'
 const COLOR_MID_BORDER = 'rgba(59, 130, 246, 0.42)'
-const COLOR_TIE_BG = 'rgba(255,255,255,0.03)'
+const COLOR_TIE_BG     = 'rgba(255,255,255,0.03)'
 const COLOR_TIE_BORDER = 'rgba(255,255,255,0.08)'
 
 export default function Comparador({ slots, productos, onLimpiarSlot, compararEspecificaciones }) {
+  // Convierte los ids de los slots en los objetos de producto reales
+  // Filtra los null (slots vacíos)
   const productosSeleccionados = slots
     .map(id => productos.find(p => p.id === id))
     .filter(Boolean)
 
+  // Solo mostramos la tabla si hay al menos 2 productos seleccionados
   const hayMinimo = productosSeleccionados.length >= 2
 
+  // Validación importante: solo se pueden comparar productos de la misma categoría
+  // (no tiene sentido comparar un computador contra un mouse)
   const mismaCategoria =
     hayMinimo &&
     productosSeleccionados.every(
       p => p.category_id === productosSeleccionados[0].category_id
     )
 
+  // Calcula todas las filas de comparación (cada fila = una especificación)
+  // Solo si hay mínimo 2 productos de la misma categoría
   const filas = hayMinimo && mismaCategoria
     ? compararEspecificaciones(...productosSeleccionados)
     : []
 
+  // ── Calcular puntaje total por producto ───────────────────
+  // Cuenta cuántas filas ganó cada producto
   const puntosPorProducto = productosSeleccionados.reduce((acc, producto) => {
     acc[producto.id] = 0
     return acc
@@ -36,11 +62,13 @@ export default function Comparador({ slots, productos, onLimpiarSlot, compararEs
     })
   })
 
+  // El ganador general es el que ganó más filas
   const mayorPuntaje = Math.max(0, ...Object.values(puntosPorProducto))
   const ganadoresGenerales = productosSeleccionados.filter(
     p => puntosPorProducto[p.id] === mayorPuntaje && mayorPuntaje > 0
   )
 
+  // Si más de uno tiene el mismo puntaje máximo → empate técnico
   const esEmpateGeneral = hayMinimo && ganadoresGenerales.length !== 1
 
   return (
@@ -57,6 +85,7 @@ export default function Comparador({ slots, productos, onLimpiarSlot, compararEs
             </p>
           </div>
 
+          {/* Botón "Limpiar comparador" — solo aparece si hay algo en los slots */}
           {productosSeleccionados.length > 0 && (
             <button
               onClick={() => slots.forEach((_, index) => onLimpiarSlot(index))}
@@ -68,9 +97,12 @@ export default function Comparador({ slots, productos, onLimpiarSlot, compararEs
         </div>
 
         <div style={comparatorShell}>
+          {/* ── Los 3 slots (A, B, C) ── */}
           <div style={slotsRow}>
             {[0, 1, 2].map(index => {
               const producto = productos.find(p => p.id === slots[index])
+
+              // Determina el estado visual del slot para cambiar su color de fondo
               const esGanador =
                 hayMinimo &&
                 !esEmpateGeneral &&
@@ -87,7 +119,7 @@ export default function Comparador({ slots, productos, onLimpiarSlot, compararEs
               return (
                 <SlotSelector
                   key={index}
-                  letra={String.fromCharCode(65 + index)}
+                  letra={String.fromCharCode(65 + index)} // 65='A', 66='B', 67='C'
                   producto={producto}
                   puntos={producto ? puntosPorProducto[producto.id] || 0 : 0}
                   onLimpiar={() => onLimpiarSlot(index)}
@@ -97,12 +129,16 @@ export default function Comparador({ slots, productos, onLimpiarSlot, compararEs
             })}
           </div>
 
+          {/* ── Tabla de comparación ── */}
           <div style={tableShell}>
+            {/* Estado 1: menos de 2 productos → pide seleccionar */}
             {!hayMinimo ? (
               <EstadoVacio />
             ) : !mismaCategoria ? (
+              /* Estado 2: productos de categorías distintas → muestra advertencia */
               <EstadoCategoriaInvalida />
             ) : (
+              /* Estado 3: todo correcto → muestra la tabla */
               <TablaComparacion
                 productosSeleccionados={productosSeleccionados}
                 filas={filas}
@@ -118,6 +154,8 @@ export default function Comparador({ slots, productos, onLimpiarSlot, compararEs
   )
 }
 
+// ── Estado vacío ──────────────────────────────────────────────
+// Se muestra cuando hay menos de 2 productos seleccionados
 function EstadoVacio() {
   return (
     <div style={emptyState}>
@@ -131,6 +169,8 @@ function EstadoVacio() {
   )
 }
 
+// ── Advertencia de categoría inválida ─────────────────────────
+// Se muestra cuando los productos son de categorías distintas
 function EstadoCategoriaInvalida() {
   return (
     <div style={emptyState}>
@@ -145,6 +185,10 @@ function EstadoCategoriaInvalida() {
   )
 }
 
+// ── Tarjeta de slot ───────────────────────────────────────────
+// Representa UNO de los 3 espacios del comparador (A, B o C).
+// Cambia su estilo visual según si el producto es ganador,
+// perdedor, empate o si el slot está vacío.
 function SlotSelector({ letra, producto, puntos, onLimpiar, estadoGanador }) {
   const estilosEstado =
     estadoGanador === 'ganador'
@@ -167,8 +211,9 @@ function SlotSelector({ letra, producto, puntos, onLimpiar, estadoGanador }) {
     <div style={{ ...slotCard, ...estilosEstado }}>
       <div style={slotLabelRow}>
         <span style={slotEyebrow}>Producto {letra}</span>
+        {/* Badges de estado — solo aparecen cuando hay resultado */}
         {producto && estadoGanador === 'ganador' && <span style={winnerPill}>Ganador</span>}
-        {producto && estadoGanador === 'empate' && <span style={tiePill}>Empate</span>}
+        {producto && estadoGanador === 'empate'  && <span style={tiePill}>Empate</span>}
       </div>
 
       {producto ? (
@@ -183,6 +228,7 @@ function SlotSelector({ letra, producto, puntos, onLimpiar, estadoGanador }) {
           </button>
         </>
       ) : (
+        // Slot vacío — invita al usuario a seleccionar desde el catálogo
         <div style={{ color: 'var(--text-secondary)', fontSize: '0.96rem' }}>
           Selecciónalo desde el catálogo.
         </div>
@@ -191,9 +237,12 @@ function SlotSelector({ letra, producto, puntos, onLimpiar, estadoGanador }) {
   )
 }
 
+// ── Tabla de comparación ──────────────────────────────────────
+// Muestra la tabla completa con todas las especificaciones y colores
 function TablaComparacion({ productosSeleccionados, filas, puntosPorProducto, ganadoresGenerales, esEmpateGeneral }) {
   return (
     <>
+      {/* Encabezado con puntajes actuales */}
       <div style={tableHeader}>
         <div style={tableHeaderTitle}>
           <strong>Comparación de {productosSeleccionados.length} productos</strong>
@@ -209,6 +258,7 @@ function TablaComparacion({ productosSeleccionados, filas, puntosPorProducto, ga
       </div>
 
       <div style={rowsWrap}>
+        {/* Fila de encabezados de columnas */}
         <div style={columnHeaderGrid(productosSeleccionados.length)}>
           <div style={columnHeaderCell}>Especificación</div>
           {productosSeleccionados.map(producto => (
@@ -218,6 +268,7 @@ function TablaComparacion({ productosSeleccionados, filas, puntosPorProducto, ga
           ))}
         </div>
 
+        {/* Una fila por cada especificación (Procesador, RAM, etc.) */}
         {filas.map(fila => (
           <FilaComparacion
             key={fila.spec}
@@ -227,6 +278,7 @@ function TablaComparacion({ productosSeleccionados, filas, puntosPorProducto, ga
         ))}
       </div>
 
+      {/* Barra final con el resultado general */}
       <BarraGanador
         ganadoresGenerales={ganadoresGenerales}
         esEmpateGeneral={esEmpateGeneral}
@@ -236,6 +288,8 @@ function TablaComparacion({ productosSeleccionados, filas, puntosPorProducto, ga
   )
 }
 
+// ── Barra del ganador ─────────────────────────────────────────
+// Aparece al final de la tabla con el resultado general
 function BarraGanador({ ganadoresGenerales, esEmpateGeneral, puntosPorProducto }) {
   const texto = esEmpateGeneral
     ? 'Empate técnico entre los productos seleccionados'
@@ -259,11 +313,15 @@ function BarraGanador({ ganadoresGenerales, esEmpateGeneral, puntosPorProducto }
   )
 }
 
+// ── Fila de una especificación ────────────────────────────────
+// Cada fila muestra el nombre de la spec y el valor de cada producto con su color
 function FilaComparacion({ fila, productosSeleccionados }) {
   return (
     <div style={rowGrid(productosSeleccionados.length)}>
+      {/* Nombre de la especificación (ej: "Procesador") */}
       <div style={specCell}>{fila.spec}</div>
 
+      {/* Valor de cada producto con su color según ganador/perdedor/intermedio */}
       {productosSeleccionados.map(producto => {
         const item = fila.valores.find(v => v.productoId === producto.id)
         return (
@@ -278,21 +336,23 @@ function FilaComparacion({ fila, productosSeleccionados }) {
   )
 }
 
+// ── Celda de valor con color ──────────────────────────────────
+// Aplica el color de fondo y borde según el estado del valor
 function ValorComparado({ valor, estado }) {
   const estilo =
     estado === 'ganador'
-      ? { background: COLOR_WIN_BG, border: `1px solid ${COLOR_WIN_BORDER}`, color: '#b9fbcf' }
+      ? { background: COLOR_WIN_BG,  border: `1px solid ${COLOR_WIN_BORDER}`,  color: '#b9fbcf' }
       : estado === 'perdedor'
       ? { background: COLOR_LOSE_BG, border: `1px solid ${COLOR_LOSE_BORDER}`, color: '#ffb4b4' }
       : estado === 'intermedio'
-      ? { background: COLOR_MID_BG, border: `1px solid ${COLOR_MID_BORDER}`, color: '#bfdbfe' }
-      : { background: COLOR_TIE_BG, border: `1px solid ${COLOR_TIE_BORDER}`, color: '#f8fafc' }
+      ? { background: COLOR_MID_BG,  border: `1px solid ${COLOR_MID_BORDER}`,  color: '#bfdbfe' }
+      : { background: COLOR_TIE_BG,  border: `1px solid ${COLOR_TIE_BORDER}`,  color: '#f8fafc' }
 
   return <div style={{ ...valueCell, ...estilo }}>{valor}</div>
 }
 
+/* ── Estilos ────────────────────────────────────────────────── */
 const gridColumns = (cantidad) => `minmax(150px, 0.65fr) repeat(${cantidad}, minmax(0, 1fr))`
-
 const outerWrap = { maxWidth: '1420px', margin: '0 auto' }
 const headerWrap = { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '16px', marginBottom: '28px', flexWrap: 'wrap' }
 const titleStyle = { fontSize: 'clamp(1.9rem, 2.8vw, 2.6rem)', fontWeight: 900, letterSpacing: '-0.03em', marginBottom: '10px' }

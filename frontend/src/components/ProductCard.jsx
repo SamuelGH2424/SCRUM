@@ -1,6 +1,20 @@
-// ProductCard.jsx
-// Tarjeta premium de producto con click para abrir detalles
+// ============================================================
+// ProductCard.jsx — La tarjeta de cada producto en el catálogo
+// ============================================================
+// Este componente dibuja UNA tarjeta de producto.
+// Es un componente "presentacional puro": no tiene lógica
+// propia ni habla con el servidor — solo recibe datos por
+// props y los muestra visualmente.
+//
+// Props que recibe:
+//   - producto: objeto con todos los datos del producto
+//   - enComparador: boolean — ¿este producto ya está en el comparador?
+//   - onToggleComparar: función para agregar/quitar del comparador
+//   - onVerDetalles: función para abrir la ficha de detalles
+// ============================================================
 
+// Formatea un número como precio en pesos colombianos
+// Ejemplo: 4334900 → "$4.334.900"
 const formatearPrecio = (precio) =>
   new Intl.NumberFormat('es-CO', {
     style: 'currency',
@@ -8,6 +22,8 @@ const formatearPrecio = (precio) =>
     minimumFractionDigits: 0,
   }).format(precio)
 
+// Emoji por marca: si el producto no tiene imagen,
+// se muestra este emoji como representación visual de la marca
 const emojiPorMarca = {
   HP: '💻',
   ASUS: '🎮',
@@ -34,6 +50,8 @@ export default function ProductCard({
   const emoji = emojiPorMarca[producto.brand_name] || '💻'
 
   return (
+    // article es el contenedor de la tarjeta completa.
+    // Al hacer clic en cualquier parte de la tarjeta → abre el modal de detalles
     <article
       className="animate-fade-in product-card-premium"
       onClick={() => onVerDetalles(producto)}
@@ -41,6 +59,7 @@ export default function ProductCard({
       style={{
         background:
           'linear-gradient(180deg, rgba(15,23,42,0.92), rgba(2,6,23,0.96))',
+        // Si el producto está en el comparador, el borde se pone cyan
         border: enComparador
           ? '1px solid rgba(34,211,238,0.55)'
           : '1px solid rgba(255,255,255,0.08)',
@@ -55,11 +74,13 @@ export default function ProductCard({
           ? '0 0 0 1px rgba(34,211,238,0.16), 0 18px 55px rgba(8,145,178,0.12)'
           : '0 14px 42px rgba(0,0,0,0.26)',
       }}
+      // Efecto hover: la tarjeta sube 8px cuando el mouse entra
       onMouseEnter={e => {
         e.currentTarget.style.transform = 'translateY(-8px)'
         e.currentTarget.style.borderColor = 'rgba(34,211,238,0.48)'
         e.currentTarget.style.boxShadow = '0 24px 68px rgba(0,0,0,0.48)'
       }}
+      // Cuando el mouse sale, vuelve a su posición original
       onMouseLeave={e => {
         e.currentTarget.style.transform = 'translateY(0)'
         e.currentTarget.style.borderColor = enComparador
@@ -70,6 +91,7 @@ export default function ProductCard({
           : '0 14px 42px rgba(0,0,0,0.26)'
       }}
     >
+      {/* ── Zona de imagen ── */}
       <div
         style={{
           position: 'relative',
@@ -83,6 +105,7 @@ export default function ProductCard({
           overflow: 'hidden',
         }}
       >
+        {/* Si el producto tiene imagen, la muestra. Si no, muestra el emoji */}
         {producto.image_url ? (
           <img
             src={producto.image_url}
@@ -95,6 +118,7 @@ export default function ProductCard({
               transition: 'transform 0.45s ease',
             }}
             onError={e => {
+              // Si la imagen falla al cargar (URL rota), la oculta
               e.currentTarget.style.display = 'none'
             }}
           />
@@ -104,25 +128,30 @@ export default function ProductCard({
           </span>
         )}
 
+        {/* Capa oscura semitransparente encima de la imagen para legibilidad */}
         <div
           style={{
             position: 'absolute',
             inset: 0,
             background:
               'linear-gradient(180deg, rgba(0,0,0,0.06), rgba(2,6,23,0.76))',
-            pointerEvents: 'none',
+            pointerEvents: 'none', // Esta capa no bloquea los clics
           }}
         />
 
+        {/* ── Botón "+ Comparar" / "✓ Comparando" ── */}
+        {/* IMPORTANTE: e.stopPropagation() evita que el clic en este botón
+            también abra el modal de detalles del article padre */}
         <button
           onClick={e => {
-            e.stopPropagation()
+            e.stopPropagation() // ← Sin esto, al comparar también abriría el modal
             onToggleComparar(producto.id)
           }}
           style={{
             position: 'absolute',
             top: '14px',
             left: '14px',
+            // El botón cambia de color cuando el producto ya está en el comparador
             background: enComparador
               ? 'linear-gradient(135deg, #22c55e, #86efac)'
               : 'rgba(2,6,23,0.76)',
@@ -145,6 +174,7 @@ export default function ProductCard({
           {enComparador ? '✓ Comparando' : '+ Comparar'}
         </button>
 
+        {/* Badge de categoría en la esquina superior derecha */}
         <div
           style={{
             position: 'absolute',
@@ -165,6 +195,7 @@ export default function ProductCard({
           {producto.category_name || 'Producto'}
         </div>
 
+        {/* Botones inferiores sobre la imagen */}
         <div
           style={{
             position: 'absolute',
@@ -210,6 +241,7 @@ export default function ProductCard({
         </div>
       </div>
 
+      {/* ── Zona de texto (debajo de la imagen) ── */}
       <div
         style={{
           padding: '20px',
@@ -218,6 +250,7 @@ export default function ProductCard({
           flex: 1,
         }}
       >
+        {/* Nombre de la marca en pequeño arriba */}
         <div
           style={{
             fontFamily: 'DM Mono, monospace',
@@ -231,6 +264,7 @@ export default function ProductCard({
           {producto.brand_name || 'Marca'}
         </div>
 
+        {/* Nombre del producto */}
         <h3
           style={{
             fontWeight: 900,
@@ -243,6 +277,7 @@ export default function ProductCard({
           {producto.name}
         </h3>
 
+        {/* Descripción corta (máximo 2 líneas con CSS) */}
         {producto.description && (
           <p
             style={{
@@ -260,12 +295,13 @@ export default function ProductCard({
           </p>
         )}
 
+        {/* Precio y número de tiendas */}
         <div
           style={{
             display: 'flex',
             alignItems: 'flex-end',
             justifyContent: 'space-between',
-            marginTop: 'auto',
+            marginTop: 'auto', // Empuja este bloque hacia abajo de la tarjeta
             paddingTop: '1rem',
             gap: '14px',
           }}
@@ -274,6 +310,7 @@ export default function ProductCard({
             <div style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '2px' }}>
               Desde
             </div>
+            {/* lowest_price viene calculado del backend: es el precio más bajo entre todas las tiendas */}
             <div
               style={{
                 fontSize: '1.35rem',
@@ -287,6 +324,7 @@ export default function ProductCard({
             </div>
           </div>
 
+          {/* Cuántas tiendas venden este producto */}
           <div
             style={{
               fontFamily: 'DM Mono, monospace',
