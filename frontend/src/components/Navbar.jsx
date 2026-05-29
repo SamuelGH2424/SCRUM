@@ -1,4 +1,5 @@
-export default function Navbar({ searchQuery, onSearchChange, onSearchSubmit, onKeyDown }) {
+﻿export default function Navbar({ searchQuery, onSearchChange, onSearchSubmit, onKeyDown, favoritosCount, onAbrirFavoritos }) {
+  const count = favoritosCount || 0
   return (
     <header className="glass" style={{
       position: 'sticky', top: 0, zIndex: 100,
@@ -22,7 +23,7 @@ export default function Navbar({ searchQuery, onSearchChange, onSearchSubmit, on
         </span>
       </a>
 
-      {/* Barra de búsqueda */}
+      {/* Barra de busqueda */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1, maxWidth: '480px' }}>
         <div style={{ position: 'relative', flex: 1 }}>
           <span style={{
@@ -68,7 +69,7 @@ export default function Navbar({ searchQuery, onSearchChange, onSearchSubmit, on
         </button>
       </div>
 
-      {/* Links de navegación */}
+      {/* Links de navegacion */}
       <nav style={{ display: 'flex', gap: '8px', alignItems: 'center', flexShrink: 0 }}>
         {[
           { label: 'Catálogo',   href: '#catalogo',   activo: true  },
@@ -89,6 +90,54 @@ export default function Navbar({ searchQuery, onSearchChange, onSearchSubmit, on
             {link.label}
           </a>
         ))}
+
+        {/* Boton de Favoritos */}
+        <button
+          id="btn-favoritos"
+          onClick={onAbrirFavoritos}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            background: count > 0 ? 'rgba(239, 68, 68, 0.1)' : 'rgba(255,255,255,0.04)',
+            border: count > 0 ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid rgba(255,255,255,0.1)',
+            borderRadius: '20px',
+            padding: '6px 14px',
+            color: count > 0 ? '#ef4444' : '#9090a8',
+            fontWeight: '700',
+            fontSize: '0.88rem',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.background = 'rgba(239,68,68,0.18)'
+            e.currentTarget.style.borderColor = 'rgba(239,68,68,0.5)'
+            e.currentTarget.style.color = '#ef4444'
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.background = count > 0 ? 'rgba(239,68,68,0.1)' : 'rgba(255,255,255,0.04)'
+            e.currentTarget.style.borderColor = count > 0 ? 'rgba(239,68,68,0.3)' : 'rgba(255,255,255,0.1)'
+            e.currentTarget.style.color = count > 0 ? '#ef4444' : '#9090a8'
+          }}
+        >
+          <span style={{ fontSize: '1rem' }}>{count > 0 ? '❤\uFE0F' : '🤍'}</span>
+          <span>Favoritos</span>
+          {count > 0 && (
+            <span style={{
+              background: '#ef4444',
+              color: '#fff',
+              fontSize: '10px',
+              fontWeight: '900',
+              width: '18px',
+              height: '18px',
+              borderRadius: '50%',
+              display: 'grid',
+              placeItems: 'center',
+            }}>
+              {count}
+            </span>
+          )}
+        </button>
       </nav>
     </header>
   )

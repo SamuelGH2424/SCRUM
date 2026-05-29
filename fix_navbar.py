@@ -1,0 +1,8 @@
+﻿content = open('frontend/src/components/Navbar.jsx', encoding='utf-8').read()
+content = content.replace('className={""}glass{""}', 'className="glass"')
+content = content.replace('href={""}#{""}', 'href="#"')
+content = content.replace('id={""}btn-favoritos{""}', 'id="btn-favoritos"')
+content = content.replace('type={""}text{""}', 'type="text"')
+content = content.replace('placeholder={""}Buscar producto...{""}', 'placeholder="Buscar producto..."')
+open('frontend/src/components/Navbar.jsx', 'w', encoding='utf-8').write(content)
+print('Fixed Navbar quotes.')

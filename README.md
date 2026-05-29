@@ -1,4 +1,4 @@
-# 🖥️ TechCompare — Comparador de Productos Tecnológicos
+﻿# 🖥️ TechCompare — Comparador de Productos Tecnológicos
 
 > Plataforma web para buscar, comparar y guardar productos tecnológicos de forma rápida, clara y segura.
 
@@ -48,50 +48,6 @@ Desarrollar una aplicación web que permita comparar productos tecnológicos de 
 
 ## 🛠️ Stack Tecnológico
 
-main
-| Área              | Tecnología         |
-|-------------------|--------------------|
-| Control de versiones | Git & GitHub    |
-| Lenguaje          |   Typescript        |
-| Base de datos     | Por definir        |
-| Frontend          | Por definir        |
-| Backend           | Por definir        |
-| Despliegue        | URL pública        |
-
----
-
-## 📖 Historias de Usuario — Gestión PMP
-
-Las siguientes historias corresponden a tareas de gestión del proyecto bajo el marco **PMP (Project Management Professional)**.
-
----
-
-### 🗂️ HU-PMP-01 — Crear Project Charter
-
-**Como** equipo de desarrollo,  
-**quiero** elaborar un Project Charter formal,  
-**para** definir el alcance, objetivos, entregables y partes interesadas del proyecto de manera oficial.
-
-**Criterios de aceptación:**
-- [ ] El Project Charter incluye nombre del proyecto, justificación, objetivos y alcance.
-- [ ] Se identifican los roles del equipo y responsabilidades.
-- [ ] El documento es aprobado y firmado (o validado) por el profesor/cliente.
-- [ ] El charter está disponible en el repositorio en la carpeta `/docs`.
-
----
-
-### ✔️ HU-PMP-02 — Definir Definition of Done (DoD)
-
-**Como** equipo de desarrollo,  
-**quiero** establecer una Definición de Done clara,  
-**para** que todos los miembros del equipo sepan cuándo una tarea o historia de usuario se considera completada.
-
-**Criterios de aceptación:**
-- [ ] El DoD está documentado y accesible para todo el equipo.
-- [ ] Incluye criterios de código (revisión, pruebas, sin errores).
-- [ ] Incluye criterios de documentación y despliegue cuando aplica.
-- [ ] El DoD está publicado en el repositorio o en el tablero del proyecto.
-=======
 | Área | Tecnología | Razón |
 |------|-----------|-------|
 | Control de versiones | Git & GitHub | Estándar para colaboración y gestión de repositorios |
@@ -99,7 +55,6 @@ Las siguientes historias corresponden a tareas de gestión del proyecto bajo el 
 | Backend / API | Node.js + Express | Ligero y eficiente |
 | Despliegue | Vercel | URL pública con CI/CD integrado |
 | Base de datos | Por definir | — |
-master
 
 ---
 
@@ -418,12 +373,6 @@ Base de datos con información de productos
 
 | Nombre | Rol |
 |--------|-----|
-main
-| _(Samuel Gerena)_ | _(Development)_ |
-| _(Jorge Montes)_ | _(Development)_ |
-| _(Jorge Camargo)_ | _(Scrum master)_ |
-| _(Jovany Gutierrez)_ | _(Product owner)_ |
-=======
 | Samuel Gerena | Developer |
 | Jorge Eliecer | Developer |
 | Jorge Camargo | Scrum Master |
@@ -446,5 +395,5 @@ main
 - Cantidad de productos limitada a la base de datos provista por el profesor.
 - Dependencia de la base de datos del profesor.
 - Posibles limitaciones en hosting o despliegue.
-master
+
 

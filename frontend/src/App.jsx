@@ -1,4 +1,4 @@
-// ============================================================
+﻿// ============================================================
 // App.jsx — El director de orquesta
 // ============================================================
 // Este es el componente raíz de toda la aplicación.
@@ -13,15 +13,17 @@
 // ============================================================
 
 import './index.css'
-import Navbar     from './components/Navbar.jsx'
-import Hero       from './components/Hero.jsx'
-import Filtros    from './components/Filtros.jsx'
-import Catalogo   from './components/Catalogo.jsx'
-import Comparador from './components/Comparador.jsx'
-import Nosotros   from './components/Nosotros.jsx'
-import Footer     from './components/Footer.jsx'
+import Navbar        from './components/Navbar.jsx'
+import Hero          from './components/Hero.jsx'
+import Filtros       from './components/Filtros.jsx'
+import Catalogo      from './components/Catalogo.jsx'
+import Comparador    from './components/Comparador.jsx'
+import Nosotros      from './components/Nosotros.jsx'
+import Footer        from './components/Footer.jsx'
+import PanelFavoritos from './components/PanelFavoritos.jsx'
 import { useProductos }  from './hooks/useProductos.js'
 import { useComparador } from './hooks/useComparador.js'
+import { useFavoritos }  from './hooks/useFavoritos.js'
 import { useState } from 'react'
 
 function App() {
@@ -34,6 +36,13 @@ function App() {
   // ── Hook del comparador ───────────────────────────────────
   // Maneja los 3 slots y la lógica de comparación.
   const { slots, toggleProducto, limpiarSlot, compararEspecificaciones } = useComparador()
+
+  // ── Hook de favoritos (HU-0006) ───────────────────────────
+  // Persiste la lista de favoritos en localStorage.
+  const { favoritos, toggleFavorito, esFavorito } = useFavoritos()
+
+  // ── Estado del panel de favoritos ──────────────────────────
+  const [panelFavoritosAbierto, setPanelFavoritosAbierto] = useState(false)
 
   // ── Estado de búsqueda por nombre ────────────────────────
   // searchQuery: lo que el usuario está escribiendo en tiempo real
@@ -74,6 +83,8 @@ function App() {
         onSearchChange={(e) => setSearchQuery(e.target.value)}
         onSearchSubmit={handleSearch}
         onKeyDown={handleKeyDown}
+        favoritosCount={favoritos.length}
+        onAbrirFavoritos={() => setPanelFavoritosAbierto(true)}
       />
 
       <main style={{ flex: 1 }}>
@@ -129,6 +140,8 @@ function App() {
           onToggleComparar={toggleProducto}
           activeSearch={activeSearch}
           onClearSearch={clearSearch}
+          favoritosIds={favoritos}
+          onToggleFavorito={toggleFavorito}
         />
 
         {/* Comparador de productos
@@ -146,6 +159,18 @@ function App() {
       </main>
 
       <Footer />
+
+      {/* Panel deslizable de favoritos — HU-0006 */}
+      <PanelFavoritos
+        isOpen={panelFavoritosAbierto}
+        onCerrar={() => setPanelFavoritosAbierto(false)}
+        favoritosIds={favoritos}
+        productos={productos}
+        onToggleFavorito={toggleFavorito}
+        onToggleComparar={toggleProducto}
+        slots={slots}
+        onVerDetalles={() => {}}
+      />
     </div>
   )
 }

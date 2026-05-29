@@ -46,6 +46,8 @@ export default function ProductCard({
   enComparador,
   onToggleComparar,
   onVerDetalles,
+  esFavorito,
+  onToggleFavorito,
 }) {
   const emoji = emojiPorMarca[producto.brand_name] || '💻'
 
@@ -174,12 +176,49 @@ export default function ProductCard({
           {enComparador ? '✓ Comparando' : '+ Comparar'}
         </button>
 
+        {/* Botón de favoritos en la esquina superior derecha */}
+        <button
+          onClick={e => {
+            e.stopPropagation() // Evita abrir detalles
+            onToggleFavorito(producto.id)
+          }}
+          title={esFavorito ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+          style={{
+            position: 'absolute',
+            top: '14px',
+            right: '14px',
+            width: '34px',
+            height: '34px',
+            borderRadius: '50%',
+            background: esFavorito ? 'rgba(239, 68, 68, 0.22)' : 'rgba(2, 6, 23, 0.76)',
+            border: esFavorito ? '1px solid rgba(239, 68, 68, 0.45)' : '1px solid rgba(255, 255, 255, 0.12)',
+            color: esFavorito ? '#ef4444' : '#94a3b8',
+            fontSize: '15px',
+            cursor: 'pointer',
+            display: 'grid',
+            placeItems: 'center',
+            transition: 'all 0.2s',
+            zIndex: 10,
+            backdropFilter: 'blur(10px)',
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.transform = 'scale(1.1)'
+            if (!esFavorito) e.currentTarget.style.color = '#ef4444'
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.transform = 'scale(1)'
+            if (!esFavorito) e.currentTarget.style.color = '#94a3b8'
+          }}
+        >
+          {esFavorito ? '❤️' : '🤍'}
+        </button>
+
         {/* Badge de categoría en la esquina superior derecha */}
         <div
           style={{
             position: 'absolute',
             top: '14px',
-            right: '14px',
+            right: '54px',
             fontFamily: 'DM Mono, monospace',
             fontSize: '10px',
             letterSpacing: '0.1em',

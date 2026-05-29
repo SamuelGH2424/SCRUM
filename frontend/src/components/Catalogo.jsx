@@ -99,6 +99,8 @@ export default function Catalogo({
   onToggleComparar,
   activeSearch,
   onClearSearch,
+  favoritosIds = [],
+  onToggleFavorito,
 }) {
   const [pagina, setPagina] = useState(1)
   const [productoDetalle, setProductoDetalle] = useState(null)
@@ -262,6 +264,8 @@ export default function Catalogo({
               enComparador={slots.includes(producto.id)}
               onToggleComparar={onToggleComparar}
               onVerDetalles={setProductoDetalle}
+              esFavorito={favoritosIds.includes(producto.id)}
+              onToggleFavorito={onToggleFavorito}
             />
           </div>
         ))}
@@ -330,6 +334,8 @@ export default function Catalogo({
           onToggleComparar={onToggleComparar}
           zoomActivo={zoomActivo}
           setZoomActivo={setZoomActivo}
+          esFavorito={favoritosIds.includes(productoDetalle.id)}
+          onToggleFavorito={onToggleFavorito}
         />
       )}
     </section>
@@ -343,6 +349,8 @@ function ProductoDetallePremium({
   onToggleComparar,
   zoomActivo,
   setZoomActivo,
+  esFavorito = false,
+  onToggleFavorito,
 }) {
   const specs = getSpecsProducto(producto)
   const specsArray = Object.entries(specs)
@@ -491,6 +499,16 @@ function ProductoDetallePremium({
                 }}
               >
                 {enComparador ? '✓ Quitar del comparador' : '+ Agregar al comparador'}
+              </button>
+
+              <button
+                onClick={() => onToggleFavorito(producto.id)}
+                style={{
+                  ...favoriteButton,
+                  ...(esFavorito ? favoriteButtonActive : {}),
+                }}
+              >
+                {esFavorito ? '❤️ En favoritos' : '🤍 Guardar favorito'}
               </button>
 
               <button onClick={onCerrar} style={secondaryButton}>
@@ -910,6 +928,23 @@ const specValue = {
   color: '#fff',
   fontSize: '0.95rem',
   lineHeight: 1.35,
+}
+
+const favoriteButton = {
+  border: '1px solid rgba(239, 68, 68, 0.3)',
+  borderRadius: '16px',
+  padding: '14px 18px',
+  background: 'rgba(239, 68, 68, 0.06)',
+  color: '#ef4444',
+  fontWeight: '950',
+  cursor: 'pointer',
+  transition: 'all 0.2s',
+}
+
+const favoriteButtonActive = {
+  background: 'linear-gradient(135deg, rgba(239,68,68,0.22), rgba(239,68,68,0.1))',
+  border: '1px solid rgba(239, 68, 68, 0.55)',
+  boxShadow: '0 0 18px rgba(239,68,68,0.15)',
 }
 
 const emptySpecs = {
