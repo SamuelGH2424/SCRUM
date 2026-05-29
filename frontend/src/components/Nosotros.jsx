@@ -4,7 +4,7 @@
 const equipoScrum = [
   { iniciales: 'GG', nombre: 'Giovanny Gutierrez', rol: 'Product Owner' },
   { iniciales: 'JC', nombre: 'Jorge Camargo',      rol: 'Scrum Master'  },
-  { iniciales: 'VR', nombre: 'Virginia Raga',      rol: 'Developer'     },
+  { iniciales: 'SG', nombre: 'Virginia Raga',      rol: 'Developer'     },
   { iniciales: 'JM', nombre: 'Jorge Montes',       rol: 'Developer'     },
   { iniciales: 'SG', nombre: 'Samuel Gerena',      rol: 'Developer'     },
 ]
